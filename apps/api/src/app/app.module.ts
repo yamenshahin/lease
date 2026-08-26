@@ -7,6 +7,7 @@ import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin/landingPage/default';
 import { join } from 'path';
+import { LeasesModule } from './leases/leases.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { join } from 'path';
         plugins: [ApolloServerPluginLandingPageLocalDefault()], // Apollo Sandbox
       }),
     }),
+    LeasesModule,
   ],
   controllers: [AppController],
   providers: [AppService],

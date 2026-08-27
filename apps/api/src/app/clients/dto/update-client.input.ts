@@ -1,8 +1,10 @@
 import { CreateClientInput } from './create-client.input';
-import { InputType, Field, Int, PartialType } from '@nestjs/graphql';
+import { InputType, Field, PartialType, ID } from '@nestjs/graphql';
+import { IsMongoId } from 'class-validator';
 
 @InputType()
 export class UpdateClientInput extends PartialType(CreateClientInput) {
-  @Field(() => Int)
-  id: number;
+  @Field(() => ID)
+  @IsMongoId()
+  id: string;
 }

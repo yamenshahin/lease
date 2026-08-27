@@ -1,4 +1,4 @@
-import { Resolver, Query, Mutation, Args, Int } from '@nestjs/graphql';
+import { Resolver, Query, Mutation, Args, ID } from '@nestjs/graphql';
 import { ClientsService } from './clients.service';
 import { Client } from './entities/client.entity';
 import { CreateClientInput } from './dto/create-client.input';
@@ -21,7 +21,7 @@ export class ClientsResolver {
   }
 
   @Query(() => Client, { name: 'client' })
-  findOne(@Args('id', { type: () => Int }) id: number) {
+  findOne(@Args('id', { type: () => ID }) id: string) {
     return this.clientsService.findOne(id);
   }
 
@@ -33,7 +33,7 @@ export class ClientsResolver {
   }
 
   @Mutation(() => Client)
-  removeClient(@Args('id', { type: () => Int }) id: number) {
+  removeClient(@Args('id', { type: () => ID }) id: string) {
     return this.clientsService.remove(id);
   }
 }

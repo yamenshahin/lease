@@ -86,7 +86,6 @@ class MapLocation {
   @Prop({ trim: true })
   address?: string;
 }
-
 const MapLocationSchema = SchemaFactory.createForClass(MapLocation);
 
 @ObjectType()
@@ -100,7 +99,6 @@ class UnitFeature {
   @Prop({ min: 0, max: 4 })
   count?: number;
 }
-
 const UnitFeatureSchema = SchemaFactory.createForClass(UnitFeature);
 
 @ObjectType()
@@ -109,25 +107,27 @@ export class Lease {
   @Field(() => ID, { name: 'id' })
   _id: string;
 
+  /** OTP-verified client (JWT) — not necessarily the property owner */
   @Field(() => ID)
-  @Prop({ type: Types.ObjectId, required: true, ref: 'Client' })
+  @Prop({ type: Types.ObjectId, required: true, ref: 'Client', index: true })
   clientId: Types.ObjectId;
 
   // --- Step 1: Basic & Legal Info ---
   @Field(() => ApplicantType)
-  @Prop({ required: true, enum: ApplicantType })
+  @Prop({ type: String, required: true, enum: ApplicantType })
   applicantType: ApplicantType;
 
+  /** Property owner (or rep) mobile — may differ from Client.whatsappNumber */
   @Field()
-  @Prop({ required: true, trim: true, maxLength: 10 })
+  @Prop({ required: true, trim: true, maxlength: 10 })
   ownerMobile: string;
 
   @Field()
-  @Prop({ required: true, trim: true, minLength: 10, maxLength: 10 })
+  @Prop({ required: true, trim: true, minlength: 10, maxlength: 10 })
   ownerId: string;
 
   @Field()
-  @Prop({ required: true, trim: true, maxLength: 12 })
+  @Prop({ required: true, trim: true, maxlength: 12 })
   deedNumber: string;
 
   @Field()
@@ -140,11 +140,11 @@ export class Lease {
 
   // --- Step 2: Tenant Profile ---
   @Field(() => TenantType)
-  @Prop({ required: true, enum: TenantType })
+  @Prop({ type: String, required: true, enum: TenantType })
   tenantType: TenantType;
 
   @Field({ nullable: true })
-  @Prop({ trim: true, minLength: 10, maxLength: 10 })
+  @Prop({ trim: true, minlength: 10, maxlength: 10 })
   tenantIdNumber?: string;
 
   @Field({ nullable: true })
@@ -152,19 +152,19 @@ export class Lease {
   tenantDob?: Date;
 
   @Field({ nullable: true })
-  @Prop({ trim: true, maxLength: 10 })
+  @Prop({ trim: true, maxlength: 10 })
   tenantMobile?: string;
 
   @Field({ nullable: true })
-  @Prop({ trim: true, minLength: 10, maxLength: 10 })
+  @Prop({ trim: true, minlength: 10, maxlength: 10 })
   unifiedNumber?: string;
 
   @Field({ nullable: true })
-  @Prop({ trim: true, minLength: 10, maxLength: 10 })
+  @Prop({ trim: true, minlength: 10, maxlength: 10 })
   representativeId?: string;
 
   @Field({ nullable: true })
-  @Prop({ trim: true })
+  @Prop({ trim: true, maxlength: 20 })
   agencyNumber?: string;
 
   // --- Step 3: Contract & Financials ---
@@ -173,11 +173,11 @@ export class Lease {
   contractStartDate: Date;
 
   @Field(() => ContractDuration)
-  @Prop({ required: true, enum: ContractDuration })
+  @Prop({ type: String, required: true, enum: ContractDuration })
   contractDuration: ContractDuration;
 
   @Field(() => PaymentFrequency)
-  @Prop({ required: true, enum: PaymentFrequency })
+  @Prop({ type: String, required: true, enum: PaymentFrequency })
   paymentFrequency: PaymentFrequency;
 
   @Field(() => Float)
@@ -185,12 +185,12 @@ export class Lease {
   annualRent: number;
 
   @Field(() => FeePayer)
-  @Prop({ required: true, enum: FeePayer })
+  @Prop({ type: String, required: true, enum: FeePayer })
   feePayer: FeePayer;
 
   // --- Step 4: Unit Specifications ---
   @Field(() => UnitType)
-  @Prop({ required: true, enum: UnitType })
+  @Prop({ type: String, required: true, enum: UnitType })
   unitType: UnitType;
 
   @Field()
@@ -198,7 +198,7 @@ export class Lease {
   unitNumber: string;
 
   @Field(() => FloorLevel)
-  @Prop({ required: true, enum: FloorLevel })
+  @Prop({ type: String, required: true, enum: FloorLevel })
   floor: FloorLevel;
 
   @Field(() => Float)
@@ -242,7 +242,7 @@ export class Lease {
   maidRoom: boolean;
 
   @Field()
-  @Prop({ required: true, trim: true })
+  @Prop({ required: true, trim: true, minlength: 3, maxlength: 14 })
   electricityMeter: string;
 
   @Field({ nullable: true })

@@ -1,26 +1,60 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model, Types } from 'mongoose';
 import { CreateLeaseInput } from './dto/create-lease.input';
 import { UpdateLeaseInput } from './dto/update-lease.input';
+import { Lease, LeaseDocument } from './entities/lease.entity';
 
 @Injectable()
 export class LeasesService {
-  create(createLeaseInput: CreateLeaseInput) {
-    return 'This action adds a new lease';
+  constructor(
+    @InjectModel(Lease.name)
+    private readonly leaseModel: Model<LeaseDocument>,
+  ) {}
+
+  create(clientId: string, input: CreateLeaseInput) {
+    return this.leaseModel.create({
+      ...input,
+      clientId: new Types.ObjectId(clientId),
+    });
   }
 
   findAll() {
-    return `This action returns all leases`;
+    return this.leaseModel.find().sort({ createdAt: -1 }).exec();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} lease`;
+  findByClient(clientId: string) {
+    return this.leaseModel
+      .find({ clientId: new Types.ObjectId(clientId) })
+      .sort({ createdAt: -1 })
+      .exec();
   }
 
-  update(id: number, updateLeaseInput: UpdateLeaseInput) {
-    return `This action updates a #${id} lease`;
+  async findOne(id: string) {
+    const lease = await this.leaseModel.findById(id).exec();
+    if (!lease) {
+      throw new NotFoundException(`Lease #${id} not found`);
+    }
+    return lease;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} lease`;
+  async update(id: string, input: UpdateLeaseInput) {
+    const { id: _ignored, ...rest } = input;
+    const lease = await this.leaseModel
+      .findByIdAndUpdate(id, rest, { new: true })
+      .exec();
+
+    if (!lease) {
+      throw new NotFoundException(`Lease #${id} not found`);
+    }
+    return lease;
+  }
+
+  async remove(id: string) {
+    const lease = await this.leaseModel.findByIdAndDelete(id).exec();
+    if (!lease) {
+      throw new NotFoundException(`Lease #${id} not found`);
+    }
+    return lease;
   }
 }

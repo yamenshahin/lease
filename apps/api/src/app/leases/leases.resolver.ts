@@ -1,4 +1,4 @@
-import { Resolver, Query, Mutation, Args, Int } from '@nestjs/graphql';
+import { Resolver, Query, Mutation, Args, ID } from '@nestjs/graphql';
 import { LeasesService } from './leases.service';
 import { Lease } from './entities/lease.entity';
 import { CreateLeaseInput } from './dto/create-lease.input';
@@ -9,8 +9,11 @@ export class LeasesResolver {
   constructor(private readonly leasesService: LeasesService) {}
 
   @Mutation(() => Lease)
-  createLease(@Args('createLeaseInput') createLeaseInput: CreateLeaseInput) {
-    return this.leasesService.create(createLeaseInput);
+  createLease(
+    @Args('clientId', { type: () => ID }) clientId: string, // TODO: from JWT
+    @Args('createLeaseInput') createLeaseInput: CreateLeaseInput,
+  ) {
+    return this.leasesService.create(clientId, createLeaseInput);
   }
 
   @Query(() => [Lease], { name: 'leases' })
@@ -18,8 +21,13 @@ export class LeasesResolver {
     return this.leasesService.findAll();
   }
 
+  @Query(() => [Lease], { name: 'leasesByClient' })
+  findByClient(@Args('clientId', { type: () => ID }) clientId: string) {
+    return this.leasesService.findByClient(clientId);
+  }
+
   @Query(() => Lease, { name: 'lease' })
-  findOne(@Args('id', { type: () => Int }) id: number) {
+  findOne(@Args('id', { type: () => ID }) id: string) {
     return this.leasesService.findOne(id);
   }
 
@@ -29,7 +37,7 @@ export class LeasesResolver {
   }
 
   @Mutation(() => Lease)
-  removeLease(@Args('id', { type: () => Int }) id: number) {
+  removeLease(@Args('id', { type: () => ID }) id: string) {
     return this.leasesService.remove(id);
   }
 }

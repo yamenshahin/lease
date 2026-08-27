@@ -1,6 +1,6 @@
+import { ObjectType, Field, ID } from '@nestjs/graphql';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument } from 'mongoose';
-import { Field, ID, ObjectType } from '@nestjs/graphql';
 
 export type ClientDocument = HydratedDocument<Client>;
 
@@ -11,8 +11,12 @@ export class Client {
   _id: string;
 
   @Field()
-  @Prop({ required: true, unique: true, trim: true })
+  @Prop({ required: true, unique: true, trim: true, index: true })
   whatsappNumber: string;
+
+  @Field()
+  @Prop({ default: false })
+  isVerified: boolean;
 
   @Field()
   createdAt: Date;

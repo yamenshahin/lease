@@ -8,6 +8,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin/landingPage/default';
 import { join } from 'path';
 import { LeasesModule } from './leases/leases.module';
+import { ClientsModule } from './clients/clients.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { LeasesModule } from './leases/leases.module';
       }),
     }),
     LeasesModule,
+    ClientsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

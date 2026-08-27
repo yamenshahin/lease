@@ -1,0 +1,229 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+enum ApplicantType {
+  OWNER_OR_REP
+  TENANT
+}
+
+type Client {
+  createdAt: DateTime!
+  id: ID!
+  isVerified: Boolean!
+  updatedAt: DateTime!
+  whatsappNumber: String!
+}
+
+enum ContractDuration {
+  ONE_YEAR
+  SIX_MONTHS
+  THREE_MONTHS
+  TWO_YEARS
+}
+
+input CreateClientInput {
+  whatsappNumber: String!
+}
+
+input CreateLeaseInput {
+  agencyNumber: String
+  annualRent: Float!
+  applicantType: ApplicantType!
+  areaSqMeters: Float!
+  bathrooms: Int!
+  bedrooms: Int!
+  contractDuration: ContractDuration!
+  contractStartDate: DateTime!
+  deedDate: DateTime!
+  deedNumber: String!
+  electricityMeter: String!
+  feePayer: FeePayer!
+  floor: FloorLevel!
+  kitchen: UnitFeatureInput
+  livingRoom: UnitFeatureInput
+  location: MapLocationInput
+  maidRoom: Boolean! = false
+  ownerId: String!
+  ownerMobile: String!
+  paymentFrequency: PaymentFrequency!
+  receptionRoom: UnitFeatureInput
+  representativeId: String
+  splitAc: UnitFeatureInput
+  storageRoom: Boolean! = false
+  tenantDob: DateTime
+  tenantIdNumber: String
+  tenantMobile: String
+  tenantType: TenantType!
+  unifiedNumber: String
+  unitNumber: String!
+  unitType: UnitType!
+  waterMeter: String
+  windowAc: UnitFeatureInput
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+enum FeePayer {
+  GOV_OWNER_OFFICE_TENANT
+  OWNER
+  SPLIT_HALF
+  TENANT
+}
+
+enum FloorLevel {
+  FLOOR_1
+  FLOOR_2
+  FLOOR_3
+  FLOOR_4
+  FLOOR_5
+  FLOOR_6
+  FLOOR_7
+  FLOOR_8
+  FLOOR_9
+  FLOOR_10_PLUS
+  GROUND
+}
+
+type Lease {
+  agencyNumber: String
+  annualRent: Float!
+  applicantType: ApplicantType!
+  areaSqMeters: Float!
+  bathrooms: Int!
+  bedrooms: Int!
+  clientId: ID!
+  contractDuration: ContractDuration!
+  contractStartDate: DateTime!
+  createdAt: DateTime!
+  deedDate: DateTime!
+  deedNumber: String!
+  electricityMeter: String!
+  feePayer: FeePayer!
+  floor: FloorLevel!
+  id: ID!
+  kitchen: UnitFeature
+  livingRoom: UnitFeature
+  location: MapLocation
+  maidRoom: Boolean!
+  ownerId: String!
+  ownerMobile: String!
+  paymentFrequency: PaymentFrequency!
+  receptionRoom: UnitFeature
+  representativeId: String
+  splitAc: UnitFeature
+  storageRoom: Boolean!
+  tenantDob: DateTime
+  tenantIdNumber: String
+  tenantMobile: String
+  tenantType: TenantType!
+  unifiedNumber: String
+  unitNumber: String!
+  unitType: UnitType!
+  updatedAt: DateTime!
+  waterMeter: String
+  windowAc: UnitFeature
+}
+
+type MapLocation {
+  address: String
+  lat: Float
+  lng: Float
+}
+
+input MapLocationInput {
+  address: String
+  lat: Float
+  lng: Float
+}
+
+type Mutation {
+  createClient(createClientInput: CreateClientInput!): Client!
+  createLease(clientId: ID!, createLeaseInput: CreateLeaseInput!): Lease!
+  removeClient(id: ID!): Client!
+  removeLease(id: ID!): Lease!
+  updateClient(updateClientInput: UpdateClientInput!): Client!
+  updateLease(updateLeaseInput: UpdateLeaseInput!): Lease!
+}
+
+enum PaymentFrequency {
+  ANNUALLY
+  MONTHLY
+  QUARTERLY
+  SEMI_ANNUALLY
+}
+
+type Query {
+  client(id: ID!): Client!
+  clients: [Client!]!
+  lease(id: ID!): Lease!
+  leases: [Lease!]!
+  leasesByClient(clientId: ID!): [Lease!]!
+}
+
+enum TenantType {
+  INDIVIDUAL
+  ORGANIZATION
+}
+
+type UnitFeature {
+  count: Int
+  exists: Boolean!
+}
+
+input UnitFeatureInput {
+  count: Int
+  exists: Boolean!
+}
+
+enum UnitType {
+  APARTMENT
+  DRIVER_ROOM
+  FLOOR
+  VILLA
+}
+
+input UpdateClientInput {
+  id: ID!
+  whatsappNumber: String
+}
+
+input UpdateLeaseInput {
+  agencyNumber: String
+  annualRent: Float
+  applicantType: ApplicantType
+  areaSqMeters: Float
+  bathrooms: Int
+  bedrooms: Int
+  contractDuration: ContractDuration
+  contractStartDate: DateTime
+  deedDate: DateTime
+  deedNumber: String
+  electricityMeter: String
+  feePayer: FeePayer
+  floor: FloorLevel
+  id: ID!
+  kitchen: UnitFeatureInput
+  livingRoom: UnitFeatureInput
+  location: MapLocationInput
+  maidRoom: Boolean = false
+  ownerId: String
+  ownerMobile: String
+  paymentFrequency: PaymentFrequency
+  receptionRoom: UnitFeatureInput
+  representativeId: String
+  splitAc: UnitFeatureInput
+  storageRoom: Boolean = false
+  tenantDob: DateTime
+  tenantIdNumber: String
+  tenantMobile: String
+  tenantType: TenantType
+  unifiedNumber: String
+  unitNumber: String
+  unitType: UnitType
+  waterMeter: String
+  windowAc: UnitFeatureInput
+}

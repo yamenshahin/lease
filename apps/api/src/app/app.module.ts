@@ -24,6 +24,7 @@ import { ClientsModule } from './clients/clients.module';
     GraphQLModule.forRootAsync<ApolloDriverConfig>({
       driver: ApolloDriver,
       useFactory: () => ({
+        path: '/graphql',
         autoSchemaFile: join(process.cwd(), 'apps/api/src/schema.gql'),
         sortSchema: true,
         playground: false, // disable deprecated GraphQL Playground

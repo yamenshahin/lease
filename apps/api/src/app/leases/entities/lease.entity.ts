@@ -63,7 +63,6 @@ export enum FloorLevel {
   FLOOR_10_PLUS = '10_PLUS',
 }
 
-// Register all enums with GraphQL
 registerEnumType(ApplicantType, { name: 'ApplicantType' });
 registerEnumType(TenantType, { name: 'TenantType' });
 registerEnumType(ContractDuration, { name: 'ContractDuration' });
@@ -73,15 +72,36 @@ registerEnumType(UnitType, { name: 'UnitType' });
 registerEnumType(FloorLevel, { name: 'FloorLevel' });
 
 @ObjectType()
+@Schema({ _id: false })
+class MapLocation {
+  @Field(() => Float, { nullable: true })
+  @Prop()
+  lat?: number;
+
+  @Field(() => Float, { nullable: true })
+  @Prop()
+  lng?: number;
+
+  @Field({ nullable: true })
+  @Prop({ trim: true })
+  address?: string;
+}
+
+const MapLocationSchema = SchemaFactory.createForClass(MapLocation);
+
+@ObjectType()
+@Schema({ _id: false })
 class UnitFeature {
   @Field(() => Boolean)
   @Prop({ default: false })
   exists: boolean;
 
   @Field(() => Int, { nullable: true })
-  @Prop({ default: 0 })
+  @Prop({ min: 0, max: 4 })
   count?: number;
 }
+
+const UnitFeatureSchema = SchemaFactory.createForClass(UnitFeature);
 
 @ObjectType()
 @Schema({ timestamps: true, collection: 'leases' })
@@ -90,7 +110,7 @@ export class Lease {
   _id: string;
 
   @Field(() => ID)
-  @Prop({ type: Types.ObjectId, ref: 'Client', required: true, index: true })
+  @Prop({ type: Types.ObjectId, required: true, index: true })
   clientId: Types.ObjectId;
 
   // --- Step 1: Basic & Legal Info ---
@@ -103,20 +123,20 @@ export class Lease {
   ownerMobile: string;
 
   @Field()
-  @Prop({ required: true, trim: true })
+  @Prop({ required: true, trim: true, maxLength: 10 })
   ownerId: string;
 
   @Field()
-  @Prop({ required: true, trim: true })
+  @Prop({ required: true, trim: true, maxLength: 12 })
   deedNumber: string;
 
   @Field()
   @Prop({ required: true })
   deedDate: Date;
 
-  @Field({ nullable: true })
-  @Prop({ type: Object })
-  location?: string;
+  @Field(() => MapLocation, { nullable: true })
+  @Prop({ type: MapLocationSchema })
+  location?: MapLocation;
 
   // --- Step 2: Tenant Profile ---
   @Field(() => TenantType)
@@ -140,7 +160,7 @@ export class Lease {
   unifiedNumber?: string;
 
   @Field({ nullable: true })
-  @Prop({ trim: true })
+  @Prop({ trim: true, maxLength: 10 })
   representativeId?: string;
 
   @Field({ nullable: true })
@@ -194,23 +214,23 @@ export class Lease {
   bathrooms: number;
 
   @Field(() => UnitFeature, { nullable: true })
-  @Prop({ type: Object })
+  @Prop({ type: UnitFeatureSchema })
   kitchen?: UnitFeature;
 
   @Field(() => UnitFeature, { nullable: true })
-  @Prop({ type: Object })
+  @Prop({ type: UnitFeatureSchema })
   livingRoom?: UnitFeature;
 
   @Field(() => UnitFeature, { nullable: true })
-  @Prop({ type: Object })
-  majlis?: UnitFeature;
+  @Prop({ type: UnitFeatureSchema })
+  receptionRoom?: UnitFeature;
 
   @Field(() => UnitFeature, { nullable: true })
-  @Prop({ type: Object })
+  @Prop({ type: UnitFeatureSchema })
   splitAc?: UnitFeature;
 
   @Field(() => UnitFeature, { nullable: true })
-  @Prop({ type: Object })
+  @Prop({ type: UnitFeatureSchema })
   windowAc?: UnitFeature;
 
   @Field(() => Boolean)
@@ -237,3 +257,7 @@ export class Lease {
 }
 
 export const LeaseSchema = SchemaFactory.createForClass(Lease);
+LeaseSchema.index({ clientId: 1, createdAt: -1 });
+LeaseSchema.index({ ownerId: 1 }, { sparse: true });
+LeaseSchema.index({ tenantIdNumber: 1 }, { sparse: true });
+LeaseSchema.index({ unifiedNumber: 1 }, { sparse: true });

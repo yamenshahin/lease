@@ -110,7 +110,7 @@ export class Lease {
   _id: string;
 
   @Field(() => ID)
-  @Prop({ type: Types.ObjectId, required: true, index: true })
+  @Prop({ type: Types.ObjectId, required: true, ref: 'Client' })
   clientId: Types.ObjectId;
 
   // --- Step 1: Basic & Legal Info ---
@@ -119,11 +119,11 @@ export class Lease {
   applicantType: ApplicantType;
 
   @Field()
-  @Prop({ required: true, trim: true })
+  @Prop({ required: true, trim: true, maxLength: 10 })
   ownerMobile: string;
 
   @Field()
-  @Prop({ required: true, trim: true, maxLength: 10 })
+  @Prop({ required: true, trim: true, minLength: 10, maxLength: 10 })
   ownerId: string;
 
   @Field()
@@ -144,7 +144,7 @@ export class Lease {
   tenantType: TenantType;
 
   @Field({ nullable: true })
-  @Prop({ trim: true })
+  @Prop({ trim: true, minLength: 10, maxLength: 10 })
   tenantIdNumber?: string;
 
   @Field({ nullable: true })
@@ -152,15 +152,15 @@ export class Lease {
   tenantDob?: Date;
 
   @Field({ nullable: true })
-  @Prop({ trim: true })
+  @Prop({ trim: true, maxLength: 10 })
   tenantMobile?: string;
 
   @Field({ nullable: true })
-  @Prop({ trim: true })
+  @Prop({ trim: true, minLength: 10, maxLength: 10 })
   unifiedNumber?: string;
 
   @Field({ nullable: true })
-  @Prop({ trim: true, maxLength: 10 })
+  @Prop({ trim: true, minLength: 10, maxLength: 10 })
   representativeId?: string;
 
   @Field({ nullable: true })
@@ -257,6 +257,7 @@ export class Lease {
 }
 
 export const LeaseSchema = SchemaFactory.createForClass(Lease);
+
 LeaseSchema.index({ clientId: 1, createdAt: -1 });
 LeaseSchema.index({ ownerId: 1 }, { sparse: true });
 LeaseSchema.index({ tenantIdNumber: 1 }, { sparse: true });

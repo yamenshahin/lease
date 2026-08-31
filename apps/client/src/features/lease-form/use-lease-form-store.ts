@@ -12,11 +12,10 @@ export function useLeaseFormStore() {
 
   const setStep = (step: LeaseFormStep) => setState((s) => ({ ...s, step }));
 
-  const setWhatsappNumber = (whatsappNumber: string) =>
-    setState((s) => ({ ...s, whatsappNumber }));
+  const patch = (partial: Partial<LeaseFormState>) =>
+    setState((s) => ({ ...s, ...partial }));
 
-  const setClientId = (clientId: string) =>
-    setState((s) => ({ ...s, clientId }));
+  const reset = () => setState(initialLeaseFormState);
 
-  return { state, setStep, setWhatsappNumber, setClientId };
+  return { state, setStep, patch, reset };
 }

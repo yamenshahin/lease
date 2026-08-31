@@ -11,6 +11,19 @@ const clientsQueryDocument = gql(`
       whatsappNumber
       isVerified
       createdAt
+      updatedAt
+    }
+  }
+`);
+
+const clientQueryDocument = gql(`
+  query Client($id: ID!) {
+    client(id: $id) {
+      id
+      whatsappNumber
+      isVerified
+      createdAt
+      updatedAt
     }
   }
 `);
@@ -33,6 +46,18 @@ export function useClients() {
       const client = createGraphqlClient();
       const data = await client.request(clientsQueryDocument);
       return data.clients;
+    },
+  });
+}
+
+export function useClient(id: string | undefined) {
+  return useQuery({
+    queryKey: ['client', id],
+    enabled: !!id,
+    queryFn: async () => {
+      const client = createGraphqlClient();
+      const data = await client.request(clientQueryDocument, { id: id! });
+      return data.client;
     },
   });
 }

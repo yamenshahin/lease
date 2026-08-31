@@ -1,10 +1,5 @@
-import styles from './page.module.css';
+import { redirect } from 'next/navigation';
 
-export default function Index() {
-  /*
-   * Replace the elements below with your own.
-   *
-   * Note: The corresponding styles are in the ./index.css file.
-   */
-  return <div className={styles.page}></div>;
+export default function AdminHomePage() {
+  redirect('/leases');
 }

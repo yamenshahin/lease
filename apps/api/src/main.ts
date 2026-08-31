@@ -12,6 +12,11 @@ async function bootstrap() {
       forbidNonWhitelisted: true,
     }),
   );
+  // 1. Enable CORS so your Next.js app can talk to the API
+  app.enableCors({
+    origin: ['http://localhost:3000', 'http://localhost:3001'], // Allow your frontend
+    credentials: true,
+  });
 
   const globalPrefix = 'api';
   app.setGlobalPrefix(globalPrefix);

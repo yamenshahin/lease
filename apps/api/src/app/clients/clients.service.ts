@@ -13,8 +13,13 @@ export class ClientsService {
   ) {}
 
   async create(createClientInput: CreateClientInput): Promise<Client> {
-    const client = new this.clientModel(createClientInput);
-    return client.save();
+    return this.clientModel
+      .findOneAndUpdate(
+        { whatsappNumber: createClientInput.whatsappNumber },
+        { $set: createClientInput },
+        { upsert: true, returnDocument: 'after', setDefaultsOnInsert: true },
+      )
+      .exec();
   }
 
   /** Used by Auth (OTP flow) — upsert by whatsappNumber */
@@ -23,7 +28,7 @@ export class ClientsService {
       .findOneAndUpdate(
         { whatsappNumber },
         { whatsappNumber },
-        { upsert: true, new: true, setDefaultsOnInsert: true },
+        { upsert: true, returnDocument: 'after', setDefaultsOnInsert: true },
       )
       .exec();
   }
@@ -51,7 +56,7 @@ export class ClientsService {
     const { id: _, ...updateData } = updateClientInput;
 
     const client = await this.clientModel
-      .findByIdAndUpdate(id, updateData, { new: true })
+      .findByIdAndUpdate(id, updateData, { returnDocument: 'after' })
       .exec();
 
     if (!client) {

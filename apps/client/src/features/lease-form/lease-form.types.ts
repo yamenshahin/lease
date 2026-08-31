@@ -36,21 +36,22 @@ export type UnitFeatureForm = {
   count?: number;
 };
 
+/** Empty string = placeholder "اختر" (not yet selected) */
 export type LeaseFormState = {
   step: LeaseFormStep;
   clientId: string | null;
 
   // Step 1
   whatsappNumber: string;
-  applicantType: ApplicantType;
+  applicantType: ApplicantType | '';
   ownerMobile: string;
   ownerId: string;
   deedNumber: string;
-  deedDate: string; // yyyy-mm-dd
+  deedDate: string;
   locationAddress: string;
 
   // Step 2
-  tenantType: TenantType;
+  tenantType: TenantType | '';
   tenantIdNumber: string;
   tenantDob: string;
   tenantMobile: string;
@@ -60,18 +61,18 @@ export type LeaseFormState = {
 
   // Step 3
   contractStartDate: string;
-  contractDuration: ContractDuration;
-  paymentFrequency: PaymentFrequency;
+  contractDuration: ContractDuration | '';
+  paymentFrequency: PaymentFrequency | '';
   annualRent: number | '';
-  feePayer: FeePayer;
+  feePayer: FeePayer | '';
 
   // Step 4
-  unitType: UnitType;
+  unitType: UnitType | '';
   unitNumber: string;
-  floor: FloorLevel;
+  floor: FloorLevel | '';
   areaSqMeters: number | '';
-  bedrooms: number;
-  bathrooms: number;
+  bedrooms: number | '';
+  bathrooms: number | '';
   kitchen: UnitFeatureForm;
   livingRoom: UnitFeatureForm;
   receptionRoom: UnitFeatureForm;
@@ -88,14 +89,14 @@ export const initialLeaseFormState: LeaseFormState = {
   clientId: null,
 
   whatsappNumber: '',
-  applicantType: 'OWNER_OR_REP',
+  applicantType: '',
   ownerMobile: '',
   ownerId: '',
   deedNumber: '',
   deedDate: '',
   locationAddress: '',
 
-  tenantType: 'INDIVIDUAL',
+  tenantType: '',
   tenantIdNumber: '',
   tenantDob: '',
   tenantMobile: '',
@@ -104,17 +105,17 @@ export const initialLeaseFormState: LeaseFormState = {
   agencyNumber: '',
 
   contractStartDate: '',
-  contractDuration: 'ONE_YEAR',
-  paymentFrequency: 'MONTHLY',
+  contractDuration: '',
+  paymentFrequency: '',
   annualRent: '',
-  feePayer: 'OWNER',
+  feePayer: '',
 
-  unitType: 'APARTMENT',
+  unitType: '',
   unitNumber: '',
-  floor: 'GROUND',
+  floor: '',
   areaSqMeters: '',
-  bedrooms: 1,
-  bathrooms: 1,
+  bedrooms: '',
+  bathrooms: '',
   kitchen: { exists: false },
   livingRoom: { exists: false },
   receptionRoom: { exists: false },

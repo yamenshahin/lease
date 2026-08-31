@@ -8,41 +8,105 @@ import { LeaseFormState } from '../lease-form.types';
 import { mapToCreateLeaseInput } from '../map-to-create-lease-input';
 
 const schema = z.object({
-  unitType: z.enum(['APARTMENT', 'FLOOR', 'DRIVER_ROOM', 'VILLA']),
-  unitNumber: z.string().min(1),
-  floor: z.enum([
-    'GROUND',
-    'FLOOR_1',
-    'FLOOR_2',
-    'FLOOR_3',
-    'FLOOR_4',
-    'FLOOR_5',
-    'FLOOR_6',
-    'FLOOR_7',
-    'FLOOR_8',
-    'FLOOR_9',
-    'FLOOR_10_PLUS',
-  ]),
-  areaSqMeters: z.coerce.number().positive(),
-  bedrooms: z.coerce.number().min(1).max(4),
-  bathrooms: z.coerce.number().min(1).max(4),
+  unitType: z.enum(['APARTMENT', 'FLOOR', 'DRIVER_ROOM', 'VILLA'], {
+    required_error: 'الرجاء اختيار نوع الوحدة',
+  }),
+  unitNumber: z.string().min(1, 'رقم الوحدة مطلوب'),
+  floor: z.enum(
+    [
+      'GROUND',
+      'FLOOR_1',
+      'FLOOR_2',
+      'FLOOR_3',
+      'FLOOR_4',
+      'FLOOR_5',
+      'FLOOR_6',
+      'FLOOR_7',
+      'FLOOR_8',
+      'FLOOR_9',
+      'FLOOR_10_PLUS',
+    ],
+    { required_error: 'الرجاء اختيار الدور' },
+  ),
+  areaSqMeters: z.coerce
+    .number({
+      required_error: 'المساحة مطلوبة',
+      invalid_type_error: 'الرجاء إدخال أرقام فقط',
+    })
+    .positive('يجب أن تكون المساحة أكبر من صفر'),
+  bedrooms: z.coerce
+    .number({
+      required_error: 'الرجاء اختيار عدد غرف النوم',
+      invalid_type_error: 'الرجاء اختيار عدد غرف النوم',
+    })
+    .min(1, 'الرجاء اختيار عدد غرف النوم')
+    .max(4),
+  bathrooms: z.coerce
+    .number({
+      required_error: 'الرجاء اختيار عدد الحمامات',
+      invalid_type_error: 'الرجاء اختيار عدد الحمامات',
+    })
+    .min(1, 'الرجاء اختيار عدد الحمامات')
+    .max(4),
   kitchenExists: z.boolean(),
-  kitchenCount: z.coerce.number().min(1).max(4).optional(),
+  kitchenCount: z.coerce.number().min(1).max(3).optional(),
   livingRoomExists: z.boolean(),
-  livingRoomCount: z.coerce.number().min(1).max(4).optional(),
+  livingRoomCount: z.coerce.number().min(1).max(3).optional(),
   receptionRoomExists: z.boolean(),
-  receptionRoomCount: z.coerce.number().min(1).max(4).optional(),
+  receptionRoomCount: z.coerce.number().min(1).max(3).optional(),
   splitAcExists: z.boolean(),
-  splitAcCount: z.coerce.number().min(1).max(4).optional(),
+  splitAcCount: z.coerce.number().min(1).max(3).optional(),
   windowAcExists: z.boolean(),
-  windowAcCount: z.coerce.number().min(1).max(4).optional(),
+  windowAcCount: z.coerce.number().min(1).max(3).optional(),
   storageRoom: z.boolean(),
   maidRoom: z.boolean(),
-  electricityMeter: z.string().min(3).max(14),
+  electricityMeter: z
+    .string()
+    .min(3, 'يجب أن يتكون رقم العداد من 3 أرقام على الأقل')
+    .max(14, 'رقم العداد يجب ألا يتجاوز 14 رقماً'),
   waterMeter: z.string().optional(),
 });
 
 type FormValues = z.infer<typeof schema>;
+
+function selectClass(hasValue: boolean) {
+  return `w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-right ${
+    hasValue ? 'text-slate-900' : 'text-slate-400'
+  }`;
+}
+
+const COUNT_FEATURES = [
+  {
+    exists: 'kitchenExists' as const,
+    count: 'kitchenCount' as const,
+    label: 'يوجد مطبخ',
+    countLabel: 'عدد المطابخ',
+  },
+  {
+    exists: 'livingRoomExists' as const,
+    count: 'livingRoomCount' as const,
+    label: 'يوجد صالة',
+    countLabel: 'عدد الصالات',
+  },
+  {
+    exists: 'receptionRoomExists' as const,
+    count: 'receptionRoomCount' as const,
+    label: 'يوجد مجلس',
+    countLabel: 'عدد المجالس',
+  },
+  {
+    exists: 'splitAcExists' as const,
+    count: 'splitAcCount' as const,
+    label: 'يوجد مكيفات سبلت راكبة',
+    countLabel: 'عدد مكيفات السبلت الراكبة',
+  },
+  {
+    exists: 'windowAcExists' as const,
+    count: 'windowAcCount' as const,
+    label: 'يوجد مكيفات شباك راكبة',
+    countLabel: 'عدد مكيفات الشباك الراكبة',
+  },
+];
 
 export function Step4Unit({
   state,
@@ -54,38 +118,43 @@ export function Step4Unit({
   onSuccess: (leaseId: string) => void;
 }) {
   const createLease = useCreateLease();
-
   const {
     register,
     handleSubmit,
     control,
+    setValue,
     formState: { errors },
   } = useForm<FormValues>({
     resolver: zodResolver(schema),
     defaultValues: {
-      unitType: state.unitType,
-      unitNumber: state.unitNumber,
-      floor: state.floor,
+      unitType: state.unitType || undefined,
+      unitNumber: state.unitNumber || '',
+      floor: state.floor || undefined,
       areaSqMeters:
         state.areaSqMeters === '' ? undefined : Number(state.areaSqMeters),
-      bedrooms: state.bedrooms,
-      bathrooms: state.bathrooms,
+      bedrooms: state.bedrooms || undefined,
+      bathrooms: state.bathrooms || undefined,
       kitchenExists: state.kitchen.exists,
-      kitchenCount: state.kitchen.count,
+      kitchenCount: state.kitchen.count ?? 1,
       livingRoomExists: state.livingRoom.exists,
-      livingRoomCount: state.livingRoom.count,
+      livingRoomCount: state.livingRoom.count ?? 1,
       receptionRoomExists: state.receptionRoom.exists,
-      receptionRoomCount: state.receptionRoom.count,
+      receptionRoomCount: state.receptionRoom.count ?? 1,
       splitAcExists: state.splitAc.exists,
-      splitAcCount: state.splitAc.count,
+      splitAcCount: state.splitAc.count ?? 1,
       windowAcExists: state.windowAc.exists,
-      windowAcCount: state.windowAc.count,
+      windowAcCount: state.windowAc.count ?? 1,
       storageRoom: state.storageRoom,
       maidRoom: state.maidRoom,
-      electricityMeter: state.electricityMeter,
-      waterMeter: state.waterMeter,
+      electricityMeter: state.electricityMeter || '',
+      waterMeter: state.waterMeter || '',
     },
   });
+
+  const unitType = useWatch({ control, name: 'unitType' });
+  const floor = useWatch({ control, name: 'floor' });
+  const bedrooms = useWatch({ control, name: 'bedrooms' });
+  const bathrooms = useWatch({ control, name: 'bathrooms' });
 
   const kitchenExists = useWatch({ control, name: 'kitchenExists' });
   const livingRoomExists = useWatch({ control, name: 'livingRoomExists' });
@@ -95,6 +164,14 @@ export function Step4Unit({
   });
   const splitAcExists = useWatch({ control, name: 'splitAcExists' });
   const windowAcExists = useWatch({ control, name: 'windowAcExists' });
+
+  const existsMap = {
+    kitchenExists,
+    livingRoomExists,
+    receptionRoomExists,
+    splitAcExists,
+    windowAcExists,
+  };
 
   const onSubmit = handleSubmit(async (values) => {
     if (!state.clientId) return;
@@ -107,17 +184,30 @@ export function Step4Unit({
       areaSqMeters: values.areaSqMeters,
       bedrooms: values.bedrooms,
       bathrooms: values.bathrooms,
-      kitchen: { exists: values.kitchenExists, count: values.kitchenCount },
+      kitchen: {
+        exists: values.kitchenExists,
+        count: values.kitchenExists ? (values.kitchenCount ?? 1) : undefined,
+      },
       livingRoom: {
         exists: values.livingRoomExists,
-        count: values.livingRoomCount,
+        count: values.livingRoomExists
+          ? (values.livingRoomCount ?? 1)
+          : undefined,
       },
       receptionRoom: {
         exists: values.receptionRoomExists,
-        count: values.receptionRoomCount,
+        count: values.receptionRoomExists
+          ? (values.receptionRoomCount ?? 1)
+          : undefined,
       },
-      splitAc: { exists: values.splitAcExists, count: values.splitAcCount },
-      windowAc: { exists: values.windowAcExists, count: values.windowAcCount },
+      splitAc: {
+        exists: values.splitAcExists,
+        count: values.splitAcExists ? (values.splitAcCount ?? 1) : undefined,
+      },
+      windowAc: {
+        exists: values.windowAcExists,
+        count: values.windowAcExists ? (values.windowAcCount ?? 1) : undefined,
+      },
       storageRoom: values.storageRoom,
       maidRoom: values.maidRoom,
       electricityMeter: values.electricityMeter,
@@ -136,149 +226,228 @@ export function Step4Unit({
     <form onSubmit={onSubmit} className="space-y-3">
       <h2 className="text-center text-lg font-semibold">بيانات الوحدة</h2>
 
-      <select
-        className="w-full rounded-lg border px-3 py-2"
-        {...register('unitType')}
-      >
-        <option value="APARTMENT">شقة</option>
-        <option value="FLOOR">دور</option>
-        <option value="DRIVER_ROOM">غرفة سائق</option>
-        <option value="VILLA">فيلا</option>
-      </select>
-
-      <input
-        placeholder="رقم الوحدة"
-        className="w-full rounded-lg border px-3 py-2"
-        {...register('unitNumber')}
-      />
-
-      <select
-        className="w-full rounded-lg border px-3 py-2"
-        {...register('floor')}
-      >
-        <option value="GROUND">الأرضي</option>
-        {Array.from({ length: 9 }, (_, i) => (
-          <option key={i + 1} value={`FLOOR_${i + 1}`}>
-            {i + 1}
+      <div>
+        <label className="block text-sm text-slate-600 mb-1">نوع الوحدة</label>
+        <select
+          className={selectClass(!!unitType)}
+          {...register('unitType')}
+          defaultValue=""
+        >
+          <option value="" disabled className="text-slate-400">
+            اختر نوع الوحدة
           </option>
-        ))}
-        <option value="FLOOR_10_PLUS">10+</option>
-      </select>
+          <option value="APARTMENT" className="text-slate-900">
+            شقة
+          </option>
+          <option value="FLOOR" className="text-slate-900">
+            دور
+          </option>
+          <option value="DRIVER_ROOM" className="text-slate-900">
+            غرفة سائق
+          </option>
+          <option value="VILLA" className="text-slate-900">
+            فيلا
+          </option>
+        </select>
+        {errors.unitType && (
+          <p className="text-sm text-red-600">{errors.unitType.message}</p>
+        )}
+      </div>
 
-      <input
-        type="number"
-        placeholder="المساحة م²"
-        className="w-full rounded-lg border px-3 py-2"
-        {...register('areaSqMeters')}
-      />
-      <input
-        type="number"
-        placeholder="غرف النوم"
-        min={1}
-        max={4}
-        className="w-full rounded-lg border px-3 py-2"
-        {...register('bedrooms')}
-      />
-      <input
-        type="number"
-        placeholder="الحمامات"
-        min={1}
-        max={4}
-        className="w-full rounded-lg border px-3 py-2"
-        {...register('bathrooms')}
-      />
+      <div>
+        <label className="block text-sm text-slate-600 mb-1">رقم الوحدة</label>
+        <input
+          placeholder="أدخل رقم الوحدة"
+          className="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-right placeholder:text-right placeholder:text-slate-400"
+          {...register('unitNumber')}
+        />
+        {errors.unitNumber && (
+          <p className="text-sm text-red-600">{errors.unitNumber.message}</p>
+        )}
+      </div>
 
-      <label className="flex items-center gap-2">
-        <input type="checkbox" {...register('kitchenExists')} /> يوجد مطبخ
-      </label>
-      {kitchenExists && (
+      <div>
+        <label className="block text-sm text-slate-600 mb-1">الدور</label>
+        <select
+          className={selectClass(!!floor)}
+          {...register('floor')}
+          defaultValue=""
+        >
+          <option value="" disabled className="text-slate-400">
+            اختر الدور
+          </option>
+          <option value="GROUND" className="text-slate-900">
+            الأرضي
+          </option>
+          {Array.from({ length: 9 }, (_, i) => (
+            <option
+              key={i + 1}
+              value={`FLOOR_${i + 1}`}
+              className="text-slate-900"
+            >
+              {i + 1}
+            </option>
+          ))}
+          <option value="FLOOR_10_PLUS" className="text-slate-900">
+            10+
+          </option>
+        </select>
+        {errors.floor && (
+          <p className="text-sm text-red-600">{errors.floor.message}</p>
+        )}
+      </div>
+
+      <div>
+        <label className="block text-sm text-slate-600 mb-1">
+          المساحة (م²)
+        </label>
         <input
           type="number"
-          min={1}
-          max={4}
-          className="w-full rounded-lg border px-3 py-2"
-          {...register('kitchenCount')}
+          placeholder="أدخل المساحة بالمتر المربع"
+          className="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-right placeholder:text-right placeholder:text-slate-400"
+          {...register('areaSqMeters')}
         />
-      )}
+        {errors.areaSqMeters && (
+          <p className="text-sm text-red-600">{errors.areaSqMeters.message}</p>
+        )}
+      </div>
 
-      <label className="flex items-center gap-2">
-        <input type="checkbox" {...register('livingRoomExists')} /> يوجد صالة
-      </label>
-      {livingRoomExists && (
-        <input
-          type="number"
-          min={1}
-          max={4}
-          className="w-full rounded-lg border px-3 py-2"
-          {...register('livingRoomCount')}
-        />
-      )}
+      <div>
+        <label className="block text-sm text-slate-600 mb-1">
+          عدد غرف النوم
+        </label>
+        <select
+          className={selectClass(!!bedrooms)}
+          {...register('bedrooms', { valueAsNumber: true })}
+          defaultValue=""
+        >
+          <option value="" disabled className="text-slate-400">
+            اختر عدد الغرف
+          </option>
+          {[1, 2, 3, 4].map((n) => (
+            <option key={n} value={n} className="text-slate-900">
+              {n}
+            </option>
+          ))}
+        </select>
+        {errors.bedrooms && (
+          <p className="text-sm text-red-600">{errors.bedrooms.message}</p>
+        )}
+      </div>
 
-      <label className="flex items-center gap-2">
-        <input type="checkbox" {...register('receptionRoomExists')} /> يوجد مجلس
-      </label>
-      {receptionRoomExists && (
-        <input
-          type="number"
-          min={1}
-          max={4}
-          className="w-full rounded-lg border px-3 py-2"
-          {...register('receptionRoomCount')}
-        />
-      )}
+      <div>
+        <label className="block text-sm text-slate-600 mb-1">
+          عدد الحمامات
+        </label>
+        <select
+          className={selectClass(!!bathrooms)}
+          {...register('bathrooms', { valueAsNumber: true })}
+          defaultValue=""
+        >
+          <option value="" disabled className="text-slate-400">
+            اختر عدد الحمامات
+          </option>
+          {[1, 2, 3, 4].map((n) => (
+            <option key={n} value={n} className="text-slate-900">
+              {n}
+            </option>
+          ))}
+        </select>
+        {errors.bathrooms && (
+          <p className="text-sm text-red-600">{errors.bathrooms.message}</p>
+        )}
+      </div>
 
-      <label className="flex items-center gap-2">
-        <input type="checkbox" {...register('splitAcExists')} /> مكيفات سبلت
-      </label>
-      {splitAcExists && (
-        <input
-          type="number"
-          min={1}
-          max={4}
-          className="w-full rounded-lg border px-3 py-2"
-          {...register('splitAcCount')}
-        />
-      )}
+      {/* معلومات إضافية */}
+      <div className="space-y-3 rounded-2xl border border-slate-200 p-4 text-right">
+        <div className="font-medium text-slate-700">معلومات إضافية</div>
 
-      <label className="flex items-center gap-2">
-        <input type="checkbox" {...register('windowAcExists')} /> مكيفات شباك
-      </label>
-      {windowAcExists && (
-        <input
-          type="number"
-          min={1}
-          max={4}
-          className="w-full rounded-lg border px-3 py-2"
-          {...register('windowAcCount')}
-        />
-      )}
+        {COUNT_FEATURES.map(({ exists, count, label, countLabel }) => {
+          const on = existsMap[exists];
+          return (
+            <div
+              key={exists}
+              className="flex items-center justify-between gap-3"
+            >
+              <label className="flex cursor-pointer items-center gap-2.5">
+                <input
+                  type="checkbox"
+                  className="h-4 w-4 rounded border-slate-300 accent-teal-700"
+                  checked={!!on}
+                  onChange={(e) => {
+                    setValue(exists, e.target.checked);
+                    setValue(count, e.target.checked ? 1 : undefined);
+                  }}
+                />
+                <span className="text-sm text-slate-800">
+                  {on ? countLabel : label}
+                </span>
+              </label>
 
-      <label className="flex items-center gap-2">
-        <input type="checkbox" {...register('storageRoom')} /> غرفة مخزن
-      </label>
-      <label className="flex items-center gap-2">
-        <input type="checkbox" {...register('maidRoom')} /> غرفة خادمة
-      </label>
+              {on ? (
+                <select
+                  className="w-20 rounded-lg border border-slate-200 px-2 py-1.5 text-sm text-right text-slate-900"
+                  {...register(count, { valueAsNumber: true })}
+                >
+                  <option value={1}>1</option>
+                  <option value={2}>2</option>
+                  <option value={3}>3</option>
+                </select>
+              ) : (
+                <span className="w-20" />
+              )}
+            </div>
+          );
+        })}
 
-      <input
-        dir="ltr"
-        placeholder="رقم عداد الكهرباء"
-        className="w-full rounded-lg border px-3 py-2"
-        maxLength={14}
-        {...register('electricityMeter')}
-      />
-      {errors.electricityMeter && (
-        <p className="text-sm text-red-600">
-          {errors.electricityMeter.message}
-        </p>
-      )}
+        <label className="flex cursor-pointer items-center gap-2.5">
+          <input
+            type="checkbox"
+            className="h-4 w-4 rounded border-slate-300 accent-teal-700"
+            {...register('storageRoom')}
+          />
+          <span className="text-sm text-slate-800">يوجد غرفة مخزن</span>
+        </label>
 
-      <input
-        dir="ltr"
-        placeholder="رقم عداد المياه (اختياري)"
-        className="w-full rounded-lg border px-3 py-2"
-        {...register('waterMeter')}
-      />
+        <label className="flex cursor-pointer items-center gap-2.5">
+          <input
+            type="checkbox"
+            className="h-4 w-4 rounded border-slate-300 accent-teal-700"
+            {...register('maidRoom')}
+          />
+          <span className="text-sm text-slate-800">يوجد غرفة خادمة</span>
+        </label>
+
+        <div>
+          <label className="block text-sm text-slate-600 mb-1">
+            رقم عداد الكهرباء
+          </label>
+          <input
+            dir="ltr"
+            placeholder="3xxxxxxxx"
+            className="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-right text-sm placeholder:text-right placeholder:text-slate-400"
+            maxLength={14}
+            {...register('electricityMeter')}
+          />
+          {errors.electricityMeter && (
+            <p className="text-sm text-red-600">
+              {errors.electricityMeter.message}
+            </p>
+          )}
+        </div>
+
+        <div>
+          <label className="block text-sm text-slate-600 mb-1">
+            رقم عداد المياه
+          </label>
+          <input
+            dir="ltr"
+            placeholder="اختياري"
+            className="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-right text-sm placeholder:text-right placeholder:text-slate-400"
+            {...register('waterMeter')}
+          />
+        </div>
+      </div>
 
       {createLease.isError && (
         <p className="text-sm text-red-600">
@@ -290,14 +459,14 @@ export function Step4Unit({
         <button
           type="button"
           onClick={onBack}
-          className="flex-1 rounded-lg border py-2"
+          className="flex-1 rounded-xl border border-slate-200 py-2.5"
         >
           رجوع
         </button>
         <button
           type="submit"
           disabled={createLease.isPending}
-          className="flex-1 rounded-lg bg-teal-700 py-2 text-white disabled:opacity-60"
+          className="flex-1 rounded-xl bg-teal-700 py-2.5 text-white disabled:opacity-60"
         >
           {createLease.isPending ? 'جاري الإرسال...' : 'إرسال الطلب'}
         </button>

@@ -11,6 +11,9 @@ function feature(f: { exists: boolean; count?: number }) {
 }
 
 export function mapToCreateLeaseInput(state: LeaseFormState) {
+  const isIndividual = state.tenantType === 'INDIVIDUAL';
+  const isOrg = state.tenantType === 'ORGANIZATION';
+
   return {
     applicantType: state.applicantType,
     ownerMobile: state.ownerMobile || state.whatsappNumber,
@@ -22,12 +25,18 @@ export function mapToCreateLeaseInput(state: LeaseFormState) {
       : undefined,
 
     tenantType: state.tenantType,
-    tenantIdNumber: state.tenantIdNumber || undefined,
-    tenantDob: state.tenantDob ? toIsoDate(state.tenantDob) : undefined,
-    tenantMobile: state.tenantMobile || undefined,
-    unifiedNumber: state.unifiedNumber || undefined,
-    representativeId: state.representativeId || undefined,
-    agencyNumber: state.agencyNumber || undefined,
+
+    // Clean data based on Tenant Type to prevent backend validation errors
+    tenantIdNumber: isIndividual
+      ? state.tenantIdNumber || undefined
+      : undefined,
+    tenantDob:
+      isIndividual && state.tenantDob ? toIsoDate(state.tenantDob) : undefined,
+    tenantMobile: isIndividual ? state.tenantMobile || undefined : undefined,
+
+    unifiedNumber: isOrg ? state.unifiedNumber || undefined : undefined,
+    representativeId: isOrg ? state.representativeId || undefined : undefined,
+    agencyNumber: isOrg ? state.agencyNumber || undefined : undefined,
 
     contractStartDate: toIsoDate(state.contractStartDate),
     contractDuration: state.contractDuration,

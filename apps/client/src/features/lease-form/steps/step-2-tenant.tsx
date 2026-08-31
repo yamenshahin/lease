@@ -7,7 +7,9 @@ import { LeaseFormState, TenantType } from '../lease-form.types';
 
 const schema = z
   .object({
-    tenantType: z.enum(['INDIVIDUAL', 'ORGANIZATION']),
+    tenantType: z.enum(['INDIVIDUAL', 'ORGANIZATION'], {
+      required_error: 'الرجاء اختيار صفة المستأجر',
+    }),
     tenantIdNumber: z.string().optional(),
     tenantDob: z.string().optional(),
     tenantMobile: z.string().optional(),
@@ -20,7 +22,7 @@ const schema = z
       if (!data.tenantIdNumber || data.tenantIdNumber.length !== 10) {
         ctx.addIssue({
           code: 'custom',
-          message: 'هوية المستأجر 10 أرقام',
+          message: 'يجب أن تتكون هوية المستأجر من 10 أرقام',
           path: ['tenantIdNumber'],
         });
       }
@@ -34,7 +36,7 @@ const schema = z
       if (!data.tenantMobile || !/^05\d{8}$/.test(data.tenantMobile)) {
         ctx.addIssue({
           code: 'custom',
-          message: 'جوال غير صالح',
+          message: 'صيغة الجوال غير صحيحة (مثال: 05XXXXXXXX)',
           path: ['tenantMobile'],
         });
       }
@@ -43,14 +45,14 @@ const schema = z
       if (!data.unifiedNumber || data.unifiedNumber.length !== 10) {
         ctx.addIssue({
           code: 'custom',
-          message: 'الرقم الموحد 10 أرقام',
+          message: 'يجب أن يتكون الرقم الموحد من 10 أرقام',
           path: ['unifiedNumber'],
         });
       }
       if (!data.representativeId || data.representativeId.length !== 10) {
         ctx.addIssue({
           code: 'custom',
-          message: 'هوية الممثل 10 أرقام',
+          message: 'يجب أن تتكون هوية الممثل من 10 أرقام',
           path: ['representativeId'],
         });
       }
@@ -81,98 +83,174 @@ export function Step2Tenant({
     register,
     handleSubmit,
     control,
+    setValue,
     formState: { errors },
   } = useForm<FormValues>({
     resolver: zodResolver(schema),
-    defaultValues: defaults,
+    defaultValues: {
+      ...defaults,
+      tenantType: defaults.tenantType || undefined,
+    },
   });
 
-  const tenantType = useWatch({ control, name: 'tenantType' }) as TenantType;
+  const tenantType = useWatch({ control, name: 'tenantType' }) as
+    | TenantType
+    | undefined;
 
   return (
     <form onSubmit={handleSubmit(onNext)} className="space-y-3">
-      <h2 className="text-center text-lg font-semibold">بيانات المستأجر</h2>
+      <h2 className="text-center text-lg font-semibold">معلومات المستأجر</h2>
 
-      <div className="flex gap-2">
-        <label className="flex flex-1 items-center gap-2 rounded-lg border p-2">
-          <input type="radio" value="INDIVIDUAL" {...register('tenantType')} />
+      <label className="block text-sm text-slate-600">صفة المستأجر</label>
+      <div className="flex gap-3">
+        <button
+          type="button"
+          onClick={() =>
+            setValue('tenantType', 'INDIVIDUAL', { shouldValidate: true })
+          }
+          className={`flex-1 rounded-full border py-2.5 text-sm font-medium transition ${
+            tenantType === 'INDIVIDUAL'
+              ? 'border-teal-700 bg-teal-700 text-white'
+              : 'border-slate-200 bg-white text-slate-700'
+          }`}
+        >
           فرد
-        </label>
-        <label className="flex flex-1 items-center gap-2 rounded-lg border p-2">
-          <input
-            type="radio"
-            value="ORGANIZATION"
-            {...register('tenantType')}
-          />
+        </button>
+        <button
+          type="button"
+          onClick={() =>
+            setValue('tenantType', 'ORGANIZATION', { shouldValidate: true })
+          }
+          className={`flex-1 rounded-full border py-2.5 text-sm font-medium transition ${
+            tenantType === 'ORGANIZATION'
+              ? 'border-teal-700 bg-teal-700 text-white'
+              : 'border-slate-200 bg-white text-slate-700'
+          }`}
+        >
           منشأة
-        </label>
+        </button>
       </div>
+      {errors.tenantType && (
+        <p className="text-sm text-red-600">{errors.tenantType.message}</p>
+      )}
 
       {tenantType === 'INDIVIDUAL' && (
         <>
-          <input
-            dir="ltr"
-            placeholder="هوية المستأجر"
-            className="w-full rounded-lg border px-3 py-2"
-            maxLength={10}
-            {...register('tenantIdNumber')}
-          />
-          {errors.tenantIdNumber && (
-            <p className="text-sm text-red-600">
-              {errors.tenantIdNumber.message}
-            </p>
-          )}
-          <input
-            type="date"
-            className="w-full rounded-lg border px-3 py-2"
-            {...register('tenantDob')}
-          />
-          <input
-            dir="ltr"
-            placeholder="جوال المستأجر"
-            className="w-full rounded-lg border px-3 py-2"
-            maxLength={10}
-            {...register('tenantMobile')}
-          />
+          <div>
+            <label className="block text-sm text-slate-600 mb-1">
+              هوية المستأجر
+            </label>
+            <input
+              dir="ltr"
+              placeholder="10 أرقام"
+              className="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-right placeholder:text-right placeholder:text-slate-400"
+              maxLength={10}
+              {...register('tenantIdNumber')}
+            />
+            {errors.tenantIdNumber && (
+              <p className="text-sm text-red-600">
+                {errors.tenantIdNumber.message}
+              </p>
+            )}
+          </div>
+
+          <div>
+            <label className="block text-sm text-slate-600 mb-1">
+              تاريخ الميلاد
+            </label>
+            <input
+              type="date"
+              className="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-right"
+              {...register('tenantDob')}
+            />
+            {errors.tenantDob && (
+              <p className="text-sm text-red-600">{errors.tenantDob.message}</p>
+            )}
+          </div>
+
+          <div>
+            <label className="block text-sm text-slate-600 mb-1">
+              جوال المستأجر
+            </label>
+            <input
+              dir="ltr"
+              placeholder="05xxxxxxxx"
+              className="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-right placeholder:text-right placeholder:text-slate-400"
+              maxLength={10}
+              {...register('tenantMobile')}
+            />
+            {errors.tenantMobile && (
+              <p className="text-sm text-red-600">
+                {errors.tenantMobile.message}
+              </p>
+            )}
+          </div>
         </>
       )}
 
       {tenantType === 'ORGANIZATION' && (
         <>
-          <input
-            dir="ltr"
-            placeholder="الرقم الموحد"
-            className="w-full rounded-lg border px-3 py-2"
-            maxLength={10}
-            {...register('unifiedNumber')}
-          />
-          <input
-            dir="ltr"
-            placeholder="هوية الممثل"
-            className="w-full rounded-lg border px-3 py-2"
-            maxLength={10}
-            {...register('representativeId')}
-          />
-          <input
-            dir="ltr"
-            placeholder="رقم الوكالة (اختياري)"
-            className="w-full rounded-lg border px-3 py-2"
-            {...register('agencyNumber')}
-          />
+          <div>
+            <label className="block text-sm text-slate-600 mb-1">
+              الرقم الموحد
+            </label>
+            <input
+              dir="ltr"
+              placeholder="10 أرقام"
+              className="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-right placeholder:text-right placeholder:text-slate-400"
+              maxLength={10}
+              {...register('unifiedNumber')}
+            />
+            {errors.unifiedNumber && (
+              <p className="text-sm text-red-600">
+                {errors.unifiedNumber.message}
+              </p>
+            )}
+          </div>
+
+          <div>
+            <label className="block text-sm text-slate-600 mb-1">
+              هوية الممثل
+            </label>
+            <input
+              dir="ltr"
+              placeholder="10 أرقام"
+              className="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-right placeholder:text-right placeholder:text-slate-400"
+              maxLength={10}
+              {...register('representativeId')}
+            />
+            {errors.representativeId && (
+              <p className="text-sm text-red-600">
+                {errors.representativeId.message}
+              </p>
+            )}
+          </div>
+
+          <div>
+            <label className="block text-sm text-slate-600 mb-1">
+              رقم الوكالة
+            </label>
+            <input
+              dir="ltr"
+              placeholder="اختياري"
+              className="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-right placeholder:text-right placeholder:text-slate-400"
+              {...register('agencyNumber')}
+            />
+          </div>
         </>
       )}
 
-      <div className="flex gap-2">
+      <div className="flex gap-2 pt-1">
         <button
           type="button"
           onClick={onBack}
-          className="flex-1 rounded-lg border py-2"
+          className="flex-1 rounded-xl border border-slate-200 py-2.5"
         >
           رجوع
         </button>
         <button
           type="submit"
-          className="flex-1 rounded-lg bg-teal-700 py-2 text-white"
+          className="flex-1 rounded-xl bg-teal-700 py-2.5 text-white"
         >
           التالي
         </button>

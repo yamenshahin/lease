@@ -70,7 +70,7 @@ const schema = z.object({
 type FormValues = z.infer<typeof schema>;
 
 function selectClass(hasValue: boolean) {
-  return `w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-right ${
+  return `w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-right focus:border-[#14723d] focus:outline-none focus:ring-1 focus:ring-[#14723d] ${
     hasValue ? 'text-slate-900' : 'text-slate-400'
   }`;
 }
@@ -224,7 +224,9 @@ export function Step4Unit({
 
   return (
     <form onSubmit={onSubmit} className="space-y-3">
-      <h2 className="text-center text-lg font-semibold">بيانات الوحدة</h2>
+      <h2 className="text-center text-lg font-semibold text-slate-800">
+        بيانات الوحدة
+      </h2>
 
       <div>
         <label className="block text-sm text-slate-600 mb-1">نوع الوحدة</label>
@@ -258,7 +260,7 @@ export function Step4Unit({
         <label className="block text-sm text-slate-600 mb-1">رقم الوحدة</label>
         <input
           placeholder="أدخل رقم الوحدة"
-          className="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-right placeholder:text-right placeholder:text-slate-400"
+          className="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-right placeholder:text-right placeholder:text-slate-400 focus:border-[#14723d] focus:outline-none focus:ring-1 focus:ring-[#14723d]"
           {...register('unitNumber')}
         />
         {errors.unitNumber && (
@@ -304,7 +306,7 @@ export function Step4Unit({
         <input
           type="number"
           placeholder="أدخل المساحة بالمتر المربع"
-          className="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-right placeholder:text-right placeholder:text-slate-400"
+          className="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-right placeholder:text-right placeholder:text-slate-400 focus:border-[#14723d] focus:outline-none focus:ring-1 focus:ring-[#14723d]"
           {...register('areaSqMeters')}
         />
         {errors.areaSqMeters && (
@@ -372,7 +374,7 @@ export function Step4Unit({
               <label className="flex cursor-pointer items-center gap-2.5">
                 <input
                   type="checkbox"
-                  className="h-4 w-4 rounded border-slate-300 accent-teal-700"
+                  className="h-4 w-4 rounded border-slate-300 accent-[#14723d]"
                   checked={!!on}
                   onChange={(e) => {
                     setValue(exists, e.target.checked);
@@ -386,7 +388,7 @@ export function Step4Unit({
 
               {on ? (
                 <select
-                  className="w-20 rounded-lg border border-slate-200 px-2 py-1.5 text-sm text-right text-slate-900"
+                  className="w-20 rounded-lg border border-slate-200 px-2 py-1.5 text-sm text-right text-slate-900 focus:border-[#14723d] focus:outline-none focus:ring-1 focus:ring-[#14723d]"
                   {...register(count, { valueAsNumber: true })}
                 >
                   <option value={1}>1</option>
@@ -403,7 +405,7 @@ export function Step4Unit({
         <label className="flex cursor-pointer items-center gap-2.5">
           <input
             type="checkbox"
-            className="h-4 w-4 rounded border-slate-300 accent-teal-700"
+            className="h-4 w-4 rounded border-slate-300 accent-[#14723d]"
             {...register('storageRoom')}
           />
           <span className="text-sm text-slate-800">يوجد غرفة مخزن</span>
@@ -412,7 +414,7 @@ export function Step4Unit({
         <label className="flex cursor-pointer items-center gap-2.5">
           <input
             type="checkbox"
-            className="h-4 w-4 rounded border-slate-300 accent-teal-700"
+            className="h-4 w-4 rounded border-slate-300 accent-[#14723d]"
             {...register('maidRoom')}
           />
           <span className="text-sm text-slate-800">يوجد غرفة خادمة</span>
@@ -425,7 +427,7 @@ export function Step4Unit({
           <input
             dir="ltr"
             placeholder="3xxxxxxxx"
-            className="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-right text-sm placeholder:text-right placeholder:text-slate-400"
+            className="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-right text-sm placeholder:text-right placeholder:text-slate-400 focus:border-[#14723d] focus:outline-none focus:ring-1 focus:ring-[#14723d]"
             maxLength={14}
             {...register('electricityMeter')}
           />
@@ -443,7 +445,7 @@ export function Step4Unit({
           <input
             dir="ltr"
             placeholder="اختياري"
-            className="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-right text-sm placeholder:text-right placeholder:text-slate-400"
+            className="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-right text-sm placeholder:text-right placeholder:text-slate-400 focus:border-[#14723d] focus:outline-none focus:ring-1 focus:ring-[#14723d]"
             {...register('waterMeter')}
           />
         </div>
@@ -459,14 +461,14 @@ export function Step4Unit({
         <button
           type="button"
           onClick={onBack}
-          className="flex-1 rounded-xl border border-slate-200 py-2.5"
+          className="flex-1 rounded-xl border border-slate-200 py-2.5 hover:bg-slate-50 transition-colors"
         >
           رجوع
         </button>
         <button
           type="submit"
           disabled={createLease.isPending}
-          className="flex-1 rounded-xl bg-teal-700 py-2.5 text-white disabled:opacity-60"
+          className="flex-1 rounded-xl bg-[#ba2931] hover:bg-[#9a2128] transition-colors py-2.5 text-white disabled:opacity-60"
         >
           {createLease.isPending ? 'جاري الإرسال...' : 'إرسال الطلب'}
         </button>

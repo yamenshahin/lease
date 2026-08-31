@@ -99,7 +99,9 @@ export function Step2Tenant({
 
   return (
     <form onSubmit={handleSubmit(onNext)} className="space-y-3">
-      <h2 className="text-center text-lg font-semibold">معلومات المستأجر</h2>
+      <h2 className="text-center text-lg font-semibold text-slate-800">
+        معلومات المستأجر
+      </h2>
 
       <label className="block text-sm text-slate-600">صفة المستأجر</label>
       <div className="flex gap-3">
@@ -108,10 +110,10 @@ export function Step2Tenant({
           onClick={() =>
             setValue('tenantType', 'INDIVIDUAL', { shouldValidate: true })
           }
-          className={`flex-1 rounded-full border py-2.5 text-sm font-medium transition ${
+          className={`flex-1 rounded-full border py-2.5 text-sm font-medium transition-colors ${
             tenantType === 'INDIVIDUAL'
-              ? 'border-teal-700 bg-teal-700 text-white'
-              : 'border-slate-200 bg-white text-slate-700'
+              ? 'border-[#14723d] bg-[#14723d] text-white'
+              : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50'
           }`}
         >
           فرد
@@ -121,10 +123,10 @@ export function Step2Tenant({
           onClick={() =>
             setValue('tenantType', 'ORGANIZATION', { shouldValidate: true })
           }
-          className={`flex-1 rounded-full border py-2.5 text-sm font-medium transition ${
+          className={`flex-1 rounded-full border py-2.5 text-sm font-medium transition-colors ${
             tenantType === 'ORGANIZATION'
-              ? 'border-teal-700 bg-teal-700 text-white'
-              : 'border-slate-200 bg-white text-slate-700'
+              ? 'border-[#14723d] bg-[#14723d] text-white'
+              : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50'
           }`}
         >
           منشأة
@@ -143,7 +145,7 @@ export function Step2Tenant({
             <input
               dir="ltr"
               placeholder="10 أرقام"
-              className="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-right placeholder:text-right placeholder:text-slate-400"
+              className="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-right placeholder:text-right placeholder:text-slate-400 focus:border-[#14723d] focus:outline-none focus:ring-1 focus:ring-[#14723d]"
               maxLength={10}
               {...register('tenantIdNumber')}
             />
@@ -160,7 +162,7 @@ export function Step2Tenant({
             </label>
             <input
               type="date"
-              className="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-right"
+              className="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-right focus:border-[#14723d] focus:outline-none focus:ring-1 focus:ring-[#14723d]"
               {...register('tenantDob')}
             />
             {errors.tenantDob && (
@@ -175,7 +177,7 @@ export function Step2Tenant({
             <input
               dir="ltr"
               placeholder="05xxxxxxxx"
-              className="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-right placeholder:text-right placeholder:text-slate-400"
+              className="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-right placeholder:text-right placeholder:text-slate-400 focus:border-[#14723d] focus:outline-none focus:ring-1 focus:ring-[#14723d]"
               maxLength={10}
               {...register('tenantMobile')}
             />
@@ -197,7 +199,7 @@ export function Step2Tenant({
             <input
               dir="ltr"
               placeholder="10 أرقام"
-              className="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-right placeholder:text-right placeholder:text-slate-400"
+              className="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-right placeholder:text-right placeholder:text-slate-400 focus:border-[#14723d] focus:outline-none focus:ring-1 focus:ring-[#14723d]"
               maxLength={10}
               {...register('unifiedNumber')}
             />
@@ -215,7 +217,7 @@ export function Step2Tenant({
             <input
               dir="ltr"
               placeholder="10 أرقام"
-              className="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-right placeholder:text-right placeholder:text-slate-400"
+              className="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-right placeholder:text-right placeholder:text-slate-400 focus:border-[#14723d] focus:outline-none focus:ring-1 focus:ring-[#14723d]"
               maxLength={10}
               {...register('representativeId')}
             />
@@ -233,7 +235,7 @@ export function Step2Tenant({
             <input
               dir="ltr"
               placeholder="اختياري"
-              className="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-right placeholder:text-right placeholder:text-slate-400"
+              className="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-right placeholder:text-right placeholder:text-slate-400 focus:border-[#14723d] focus:outline-none focus:ring-1 focus:ring-[#14723d]"
               {...register('agencyNumber')}
             />
           </div>
@@ -244,13 +246,13 @@ export function Step2Tenant({
         <button
           type="button"
           onClick={onBack}
-          className="flex-1 rounded-xl border border-slate-200 py-2.5"
+          className="flex-1 rounded-xl border border-slate-200 py-2.5 hover:bg-slate-50 transition-colors"
         >
           رجوع
         </button>
         <button
           type="submit"
-          className="flex-1 rounded-xl bg-teal-700 py-2.5 text-white"
+          className="flex-1 rounded-xl bg-[#14723d] hover:bg-[#105a30] transition-colors py-2.5 text-white"
         >
           التالي
         </button>

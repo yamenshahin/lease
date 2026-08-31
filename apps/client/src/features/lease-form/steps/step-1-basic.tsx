@@ -78,7 +78,9 @@ export function Step1Basic({
 
   return (
     <form onSubmit={onSubmit} className="space-y-3">
-      <h2 className="text-center text-lg font-semibold">معلومات أساسية</h2>
+      <h2 className="text-center text-lg font-semibold text-slate-800">
+        معلومات أساسية
+      </h2>
 
       <div>
         <label className="block text-sm text-slate-600 mb-1">مقدم الطلب</label>
@@ -108,7 +110,7 @@ export function Step1Basic({
         </label>
         <input
           dir="ltr"
-          className="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-right placeholder:text-right placeholder:text-slate-400"
+          className="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-right placeholder:text-right placeholder:text-slate-400 focus:border-[#14723d] focus:outline-none focus:ring-1 focus:ring-[#14723d]"
           maxLength={10}
           placeholder="05xxxxxxxx"
           {...register('whatsappNumber')}
@@ -124,7 +126,7 @@ export function Step1Basic({
         <label className="block text-sm text-slate-600 mb-1">جوال المالك</label>
         <input
           dir="ltr"
-          className="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-right placeholder:text-right placeholder:text-slate-400"
+          className="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-right placeholder:text-right placeholder:text-slate-400 focus:border-[#14723d] focus:outline-none focus:ring-1 focus:ring-[#14723d]"
           maxLength={10}
           placeholder="05xxxxxxxx"
           {...register('ownerMobile')}
@@ -138,7 +140,7 @@ export function Step1Basic({
         <label className="block text-sm text-slate-600 mb-1">هوية المالك</label>
         <input
           dir="ltr"
-          className="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-right placeholder:text-right placeholder:text-slate-400"
+          className="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-right placeholder:text-right placeholder:text-slate-400 focus:border-[#14723d] focus:outline-none focus:ring-1 focus:ring-[#14723d]"
           maxLength={10}
           placeholder="10 أرقام"
           {...register('ownerId')}
@@ -152,7 +154,7 @@ export function Step1Basic({
         <label className="block text-sm text-slate-600 mb-1">رقم الصك</label>
         <input
           dir="ltr"
-          className="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-right placeholder:text-right placeholder:text-slate-400"
+          className="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-right placeholder:text-right placeholder:text-slate-400 focus:border-[#14723d] focus:outline-none focus:ring-1 focus:ring-[#14723d]"
           maxLength={12}
           placeholder="حتى 12 رقم"
           {...register('deedNumber')}
@@ -166,7 +168,7 @@ export function Step1Basic({
         <label className="block text-sm text-slate-600 mb-1">تاريخ الصك</label>
         <input
           type="date"
-          className="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-right"
+          className="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-right focus:border-[#14723d] focus:outline-none focus:ring-1 focus:ring-[#14723d]"
           {...register('deedDate')}
         />
         {errors.deedDate && (
@@ -179,7 +181,7 @@ export function Step1Basic({
           عنوان / موقع العقار
         </label>
         <input
-          className="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-right placeholder:text-right placeholder:text-slate-400"
+          className="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-right placeholder:text-right placeholder:text-slate-400 focus:border-[#14723d] focus:outline-none focus:ring-1 focus:ring-[#14723d]"
           placeholder="المدينة، الحي، الشارع"
           {...register('locationAddress')}
         />
@@ -189,7 +191,7 @@ export function Step1Basic({
         <button
           type="submit"
           disabled={createClient.isPending}
-          className="w-full rounded-xl bg-teal-700 py-2.5 text-white disabled:opacity-60"
+          className="w-full rounded-xl bg-[#14723d] hover:bg-[#105a30] transition-colors py-2.5 text-white disabled:opacity-60"
         >
           {createClient.isPending ? 'جاري الحفظ...' : 'التالي'}
         </button>

@@ -30,7 +30,7 @@ const schema = z.object({
 type FormValues = z.infer<typeof schema>;
 
 function selectClass(hasValue: boolean) {
-  return `w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-right ${
+  return `w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-right focus:border-[#14723d] focus:outline-none focus:ring-1 focus:ring-[#14723d] ${
     hasValue ? 'text-slate-900' : 'text-slate-400'
   }`;
 }
@@ -74,7 +74,9 @@ export function Step3Contract({
 
   return (
     <form onSubmit={handleSubmit(onNext)} className="space-y-3">
-      <h2 className="text-center text-lg font-semibold">بيانات العقد</h2>
+      <h2 className="text-center text-lg font-semibold text-slate-800">
+        بيانات العقد
+      </h2>
 
       <div>
         <label className="block text-sm text-slate-600 mb-1">
@@ -82,7 +84,7 @@ export function Step3Contract({
         </label>
         <input
           type="date"
-          className="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-right"
+          className="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-right focus:border-[#14723d] focus:outline-none focus:ring-1 focus:ring-[#14723d]"
           {...register('contractStartDate')}
         />
         {errors.contractStartDate && (
@@ -160,7 +162,7 @@ export function Step3Contract({
         </label>
         <input
           type="number"
-          className="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-right placeholder:text-right"
+          className="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-right placeholder:text-right focus:border-[#14723d] focus:outline-none focus:ring-1 focus:ring-[#14723d]"
           placeholder="3000+"
           {...register('annualRent')}
         />
@@ -203,13 +205,13 @@ export function Step3Contract({
         <button
           type="button"
           onClick={onBack}
-          className="flex-1 rounded-xl border border-slate-200 py-2.5"
+          className="flex-1 rounded-xl border border-slate-200 py-2.5 hover:bg-slate-50 transition-colors"
         >
           رجوع
         </button>
         <button
           type="submit"
-          className="flex-1 rounded-xl bg-teal-700 py-2.5 text-white"
+          className="flex-1 rounded-xl bg-[#14723d] hover:bg-[#105a30] transition-colors py-2.5 text-white"
         >
           التالي
         </button>

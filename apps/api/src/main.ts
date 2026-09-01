@@ -14,7 +14,11 @@ async function bootstrap() {
   );
   // 1. Enable CORS so your Next.js app can talk to the API
   app.enableCors({
-    origin: ['http://localhost:3000', 'http://localhost:3001'], // Allow your frontend
+    origin: [
+      'http://localhost:3000',
+      'http://localhost:3001',
+      'https://*.vercel.app',
+    ], // Allow your frontend
     credentials: true,
   });
 

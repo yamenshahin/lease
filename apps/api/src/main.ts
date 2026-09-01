@@ -17,7 +17,7 @@ async function bootstrap() {
     origin: [
       'http://localhost:3000',
       'http://localhost:3001',
-      'https://*.vercel.app',
+      /^https:\/\/.*\.vercel\.app$/,
     ], // Allow your frontend
     credentials: true,
   });

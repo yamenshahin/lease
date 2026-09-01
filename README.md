@@ -72,7 +72,7 @@ lease-workspace/
 ### 1. Install Dependencies
 
 ```bash
-npm install
+pnpm install
 
 ```
 
@@ -81,25 +81,22 @@ npm install
 Whenever the backend `schema.gql` or frontend `.graphql` queries change, regenerate the shared types:
 
 ```bash
-npm run graphql-codegen
-# or
-npx graphql-codegen --config codegen.ts
-
+pnpm codegen
 ```
 
 ### 3. Run the Development Servers
 
-**Start the NestJS API (Port 3000):**
+**Start the NestJS API (Port 3050):**
 
 ```bash
-npx nx serve api
+pnpm exec nx run api:serve
 
 ```
 
-**Start the Next.js Client (Port 3001):**
+**Start the Next.js Client (Port 3000):**
 
 ```bash
-npx nx serve client
+pnpm exec nx run client:dev
 
 ```
 
@@ -107,8 +104,8 @@ npx nx serve client
 
 Navigate to the client app in your browser and append a valid lease type to test the silent state initialization:
 
-- **Commercial:** `http://localhost:3001/lease?leaseType=commercial`
-- **Residential:** `http://localhost:3001/lease?leaseType=residential`
+- **Commercial:** `http://localhost:3000/lease?leaseType=commercial`
+- **Residential:** `http://localhost:3000/lease?leaseType=residential`
 
 ---
 

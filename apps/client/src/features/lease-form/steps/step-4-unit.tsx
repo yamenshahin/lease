@@ -4,7 +4,7 @@ import { useForm, useWatch } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useCreateLease } from '@lease-app/data-access';
-import { LeaseFormState } from '../lease-form.types';
+import { LeaseFormState, UnitType, FloorLevel } from '../lease-form.types';
 import { mapToCreateLeaseInput } from '../map-to-create-lease-input';
 
 const schema = z.object({
@@ -14,7 +14,7 @@ const schema = z.object({
     .refine(
       (val) => ['APARTMENT', 'FLOOR', 'DRIVER_ROOM', 'VILLA'].includes(val),
       { message: 'الرجاء اختيار نوع الوحدة' },
-    ),
+    ) as z.ZodType<UnitType>,
   unitNumber: z.string().min(1, 'رقم الوحدة مطلوب'),
   floor: z
     .string()
@@ -35,11 +35,10 @@ const schema = z.object({
           'FLOOR_10_PLUS',
         ].includes(val),
       { message: 'الرجاء اختيار الدور' },
-    ),
+    ) as z.ZodType<FloorLevel>,
   areaSqMeters: z.coerce
     .number({
-      required_error: 'المساحة مطلوبة',
-      invalid_type_error: 'الرجاء إدخال أرقام فقط',
+      message: 'المساحة مطلوبة (أرقام فقط)',
     })
     .positive('يجب أن تكون المساحة أكبر من صفر'),
   bedrooms: z
@@ -133,7 +132,7 @@ export function Step4Unit({
     setValue,
     formState: { errors },
   } = useForm<FormValues>({
-    resolver: zodResolver(schema),
+    resolver: zodResolver(schema) as any,
     defaultValues: {
       unitType: (state.unitType as any) || '',
       unitNumber: state.unitNumber || '',
@@ -186,10 +185,9 @@ export function Step4Unit({
 
     const merged: LeaseFormState = {
       ...state,
-      // We know these map correctly despite the transform logic casting them in the schema
-      unitType: values.unitType as any,
+      unitType: values.unitType,
       unitNumber: values.unitNumber,
-      floor: values.floor as any,
+      floor: values.floor,
       areaSqMeters: values.areaSqMeters,
       bedrooms: values.bedrooms,
       bathrooms: values.bathrooms,

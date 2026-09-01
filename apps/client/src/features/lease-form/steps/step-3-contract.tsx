@@ -3,7 +3,12 @@
 import { useForm, useWatch } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { LeaseFormState } from '../lease-form.types';
+import {
+  LeaseFormState,
+  ContractDuration,
+  PaymentFrequency,
+  FeePayer,
+} from '../lease-form.types';
 
 const schema = z.object({
   contractStartDate: z.string().min(1, 'تاريخ بداية العقد مطلوب'),
@@ -14,7 +19,7 @@ const schema = z.object({
       (val) =>
         ['THREE_MONTHS', 'SIX_MONTHS', 'ONE_YEAR', 'TWO_YEARS'].includes(val),
       { message: 'الرجاء اختيار مدة العقد' },
-    ),
+    ) as z.ZodType<ContractDuration>,
   paymentFrequency: z
     .string()
     .min(1, 'الرجاء اختيار طريقة الدفع')
@@ -22,11 +27,10 @@ const schema = z.object({
       (val) =>
         ['MONTHLY', 'QUARTERLY', 'SEMI_ANNUALLY', 'ANNUALLY'].includes(val),
       { message: 'الرجاء اختيار طريقة الدفع' },
-    ),
+    ) as z.ZodType<PaymentFrequency>,
   annualRent: z.coerce
     .number({
-      required_error: 'قيمة الإيجار مطلوبة',
-      invalid_type_error: 'الرجاء إدخال أرقام فقط',
+      message: 'قيمة الإيجار مطلوبة (أرقام فقط)',
     })
     .min(3000, 'الحد الأدنى للإيجار هو 3000 ريال'),
   feePayer: z
@@ -38,7 +42,7 @@ const schema = z.object({
           val,
         ),
       { message: 'الرجاء تحديد من سيدفع الرسوم' },
-    ),
+    ) as z.ZodType<FeePayer>,
 });
 
 type FormValues = z.infer<typeof schema>;
@@ -71,7 +75,7 @@ export function Step3Contract({
     control,
     formState: { errors },
   } = useForm<FormValues>({
-    resolver: zodResolver(schema),
+    resolver: zodResolver(schema) as any,
     defaultValues: {
       contractStartDate: defaults.contractStartDate || '',
       contractDuration: (defaults.contractDuration as any) || '',

@@ -12,7 +12,7 @@ const schema = z
       .min(1, 'الرجاء اختيار صفة المستأجر')
       .refine((val) => val === 'INDIVIDUAL' || val === 'ORGANIZATION', {
         message: 'الرجاء اختيار صفة المستأجر',
-      }),
+      }) as z.ZodType<TenantType>,
     tenantIdNumber: z.string().optional(),
     tenantDob: z.string().optional(),
     tenantMobile: z.string().optional(),
@@ -89,7 +89,7 @@ export function Step2Tenant({
     setValue,
     formState: { errors },
   } = useForm<FormValues>({
-    resolver: zodResolver(schema),
+    resolver: zodResolver(schema) as any,
     defaultValues: {
       ...defaults,
       tenantType: (defaults.tenantType as FormValues['tenantType']) || '',

@@ -164,7 +164,7 @@ export function useCreateLease() {
       const client = createGraphqlClient();
       const data = await client.request(createLeaseMutationDocument, {
         clientId,
-        input,
+        input: input as any,
       });
       return data.createLease;
     },

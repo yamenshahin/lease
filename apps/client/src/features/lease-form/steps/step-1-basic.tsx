@@ -4,7 +4,7 @@ import { useForm, useWatch } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useCreateClient } from '@lease-app/data-access';
-import { LeaseFormState } from '../lease-form.types';
+import { LeaseFormState, ApplicantType } from '../lease-form.types';
 
 const schema = z.object({
   whatsappNumber: z
@@ -15,7 +15,7 @@ const schema = z.object({
     .min(1, 'الرجاء اختيار مقدم الطلب')
     .refine((val) => val === 'OWNER_OR_REP' || val === 'TENANT', {
       message: 'الرجاء اختيار مقدم الطلب',
-    }),
+    }) as z.ZodType<ApplicantType>,
   ownerMobile: z
     .string()
     .regex(/^05\d{8}$/, 'صيغة الجوال غير صحيحة (مثال: 05XXXXXXXX)'),
@@ -25,7 +25,7 @@ const schema = z.object({
     .min(1, 'رقم الصك مطلوب')
     .max(12, 'يجب ألا يتجاوز رقم الصك 12 رقماً'),
   deedDate: z.string().min(1, 'تاريخ الصك مطلوب'),
-  locationAddress: z.string().min(1, 'العنوان / موقع العقار مطلوب'), // 👈 Now strictly required
+  locationAddress: z.string().min(1, 'العنوان / موقع العقار مطلوب'),
 });
 
 type FormValues = z.infer<typeof schema>;
@@ -59,7 +59,7 @@ export function Step1Basic({
     control,
     formState: { errors },
   } = useForm<FormValues>({
-    resolver: zodResolver(schema),
+    resolver: zodResolver(schema) as any,
     defaultValues: {
       whatsappNumber: defaults.whatsappNumber ?? '',
       applicantType:
@@ -188,7 +188,6 @@ export function Step1Basic({
           placeholder="المدينة، الحي، الشارع"
           {...register('locationAddress')}
         />
-        {/* 👈 Added the error text render block */}
         {errors.locationAddress && (
           <p className="text-sm text-red-600">
             {errors.locationAddress.message}

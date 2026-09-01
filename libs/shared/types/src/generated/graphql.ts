@@ -79,7 +79,7 @@ export type LeaseType =
   | 'RESIDENTIAL';
 
 export type MapLocationInput = {
-  address?: string | null | undefined;
+  address: string;
   lat?: number | null | undefined;
   lng?: number | null | undefined;
 };

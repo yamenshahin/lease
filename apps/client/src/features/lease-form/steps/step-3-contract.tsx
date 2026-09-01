@@ -7,24 +7,38 @@ import { LeaseFormState } from '../lease-form.types';
 
 const schema = z.object({
   contractStartDate: z.string().min(1, 'تاريخ بداية العقد مطلوب'),
-  contractDuration: z.enum(
-    ['THREE_MONTHS', 'SIX_MONTHS', 'ONE_YEAR', 'TWO_YEARS'],
-    { required_error: 'الرجاء اختيار مدة العقد' },
-  ),
-  paymentFrequency: z.enum(
-    ['MONTHLY', 'QUARTERLY', 'SEMI_ANNUALLY', 'ANNUALLY'],
-    { required_error: 'الرجاء اختيار طريقة الدفع' },
-  ),
+  contractDuration: z
+    .string()
+    .min(1, 'الرجاء اختيار مدة العقد')
+    .refine(
+      (val) =>
+        ['THREE_MONTHS', 'SIX_MONTHS', 'ONE_YEAR', 'TWO_YEARS'].includes(val),
+      { message: 'الرجاء اختيار مدة العقد' },
+    ),
+  paymentFrequency: z
+    .string()
+    .min(1, 'الرجاء اختيار طريقة الدفع')
+    .refine(
+      (val) =>
+        ['MONTHLY', 'QUARTERLY', 'SEMI_ANNUALLY', 'ANNUALLY'].includes(val),
+      { message: 'الرجاء اختيار طريقة الدفع' },
+    ),
   annualRent: z.coerce
     .number({
       required_error: 'قيمة الإيجار مطلوبة',
       invalid_type_error: 'الرجاء إدخال أرقام فقط',
     })
     .min(3000, 'الحد الأدنى للإيجار هو 3000 ريال'),
-  feePayer: z.enum(
-    ['OWNER', 'TENANT', 'SPLIT_HALF', 'GOV_OWNER_OFFICE_TENANT'],
-    { required_error: 'الرجاء تحديد من سيدفع الرسوم' },
-  ),
+  feePayer: z
+    .string()
+    .min(1, 'الرجاء تحديد من سيدفع الرسوم')
+    .refine(
+      (val) =>
+        ['OWNER', 'TENANT', 'SPLIT_HALF', 'GOV_OWNER_OFFICE_TENANT'].includes(
+          val,
+        ),
+      { message: 'الرجاء تحديد من سيدفع الرسوم' },
+    ),
 });
 
 type FormValues = z.infer<typeof schema>;
@@ -60,11 +74,11 @@ export function Step3Contract({
     resolver: zodResolver(schema),
     defaultValues: {
       contractStartDate: defaults.contractStartDate || '',
-      contractDuration: defaults.contractDuration || undefined,
-      paymentFrequency: defaults.paymentFrequency || undefined,
+      contractDuration: (defaults.contractDuration as any) || '',
+      paymentFrequency: (defaults.paymentFrequency as any) || '',
       annualRent:
         defaults.annualRent === '' ? undefined : Number(defaults.annualRent),
-      feePayer: defaults.feePayer || undefined,
+      feePayer: (defaults.feePayer as any) || '',
     },
   });
 

@@ -142,7 +142,7 @@ type MapLocation {
 }
 
 input MapLocationInput {
-  address: String
+  address: String!
   lat: Float
   lng: Float
 }

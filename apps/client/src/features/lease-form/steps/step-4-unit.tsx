@@ -8,46 +8,54 @@ import { LeaseFormState } from '../lease-form.types';
 import { mapToCreateLeaseInput } from '../map-to-create-lease-input';
 
 const schema = z.object({
-  unitType: z.enum(['APARTMENT', 'FLOOR', 'DRIVER_ROOM', 'VILLA'], {
-    required_error: 'الرجاء اختيار نوع الوحدة',
-  }),
+  unitType: z
+    .string()
+    .min(1, 'الرجاء اختيار نوع الوحدة')
+    .refine(
+      (val) => ['APARTMENT', 'FLOOR', 'DRIVER_ROOM', 'VILLA'].includes(val),
+      { message: 'الرجاء اختيار نوع الوحدة' },
+    ),
   unitNumber: z.string().min(1, 'رقم الوحدة مطلوب'),
-  floor: z.enum(
-    [
-      'GROUND',
-      'FLOOR_1',
-      'FLOOR_2',
-      'FLOOR_3',
-      'FLOOR_4',
-      'FLOOR_5',
-      'FLOOR_6',
-      'FLOOR_7',
-      'FLOOR_8',
-      'FLOOR_9',
-      'FLOOR_10_PLUS',
-    ],
-    { required_error: 'الرجاء اختيار الدور' },
-  ),
+  floor: z
+    .string()
+    .min(1, 'الرجاء اختيار الدور')
+    .refine(
+      (val) =>
+        [
+          'GROUND',
+          'FLOOR_1',
+          'FLOOR_2',
+          'FLOOR_3',
+          'FLOOR_4',
+          'FLOOR_5',
+          'FLOOR_6',
+          'FLOOR_7',
+          'FLOOR_8',
+          'FLOOR_9',
+          'FLOOR_10_PLUS',
+        ].includes(val),
+      { message: 'الرجاء اختيار الدور' },
+    ),
   areaSqMeters: z.coerce
     .number({
       required_error: 'المساحة مطلوبة',
       invalid_type_error: 'الرجاء إدخال أرقام فقط',
     })
     .positive('يجب أن تكون المساحة أكبر من صفر'),
-  bedrooms: z.coerce
-    .number({
-      required_error: 'الرجاء اختيار عدد غرف النوم',
-      invalid_type_error: 'الرجاء اختيار عدد غرف النوم',
-    })
+  bedrooms: z
+    .string()
     .min(1, 'الرجاء اختيار عدد غرف النوم')
-    .max(4),
-  bathrooms: z.coerce
-    .number({
-      required_error: 'الرجاء اختيار عدد الحمامات',
-      invalid_type_error: 'الرجاء اختيار عدد الحمامات',
-    })
+    .transform(Number)
+    .refine((val) => val >= 1 && val <= 4, {
+      message: 'الرجاء اختيار عدد غرف النوم',
+    }),
+  bathrooms: z
+    .string()
     .min(1, 'الرجاء اختيار عدد الحمامات')
-    .max(4),
+    .transform(Number)
+    .refine((val) => val >= 1 && val <= 4, {
+      message: 'الرجاء اختيار عدد الحمامات',
+    }),
   kitchenExists: z.boolean(),
   kitchenCount: z.coerce.number().min(1).max(3).optional(),
   livingRoomExists: z.boolean(),
@@ -127,13 +135,13 @@ export function Step4Unit({
   } = useForm<FormValues>({
     resolver: zodResolver(schema),
     defaultValues: {
-      unitType: state.unitType || undefined,
+      unitType: (state.unitType as any) || '',
       unitNumber: state.unitNumber || '',
-      floor: state.floor || undefined,
+      floor: (state.floor as any) || '',
       areaSqMeters:
         state.areaSqMeters === '' ? undefined : Number(state.areaSqMeters),
-      bedrooms: state.bedrooms || undefined,
-      bathrooms: state.bathrooms || undefined,
+      bedrooms: (state.bedrooms as any) || '',
+      bathrooms: (state.bathrooms as any) || '',
       kitchenExists: state.kitchen.exists,
       kitchenCount: state.kitchen.count ?? 1,
       livingRoomExists: state.livingRoom.exists,
@@ -178,9 +186,10 @@ export function Step4Unit({
 
     const merged: LeaseFormState = {
       ...state,
-      unitType: values.unitType,
+      // We know these map correctly despite the transform logic casting them in the schema
+      unitType: values.unitType as any,
       unitNumber: values.unitNumber,
-      floor: values.floor,
+      floor: values.floor as any,
       areaSqMeters: values.areaSqMeters,
       bedrooms: values.bedrooms,
       bathrooms: values.bathrooms,
@@ -320,7 +329,7 @@ export function Step4Unit({
         </label>
         <select
           className={selectClass(!!bedrooms)}
-          {...register('bedrooms', { valueAsNumber: true })}
+          {...register('bedrooms')}
           defaultValue=""
         >
           <option value="" disabled className="text-slate-400">
@@ -343,7 +352,7 @@ export function Step4Unit({
         </label>
         <select
           className={selectClass(!!bathrooms)}
-          {...register('bathrooms', { valueAsNumber: true })}
+          {...register('bathrooms')}
           defaultValue=""
         >
           <option value="" disabled className="text-slate-400">
@@ -389,7 +398,7 @@ export function Step4Unit({
               {on ? (
                 <select
                   className="w-20 rounded-lg border border-slate-200 px-2 py-1.5 text-sm text-right text-slate-900 focus:border-[#14723d] focus:outline-none focus:ring-1 focus:ring-[#14723d]"
-                  {...register(count, { valueAsNumber: true })}
+                  {...register(count)}
                 >
                   <option value={1}>1</option>
                   <option value={2}>2</option>

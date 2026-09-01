@@ -37,10 +37,10 @@ export class MapLocationInput {
   @IsNumber({}, { message: 'يجب أن يكون خط الطول رقماً' })
   lng?: number;
 
-  @Field({ nullable: true })
-  @IsOptional()
+  @Field()
   @IsString({ message: 'يجب أن يكون العنوان نصاً' })
-  address?: string;
+  @IsNotEmpty({ message: 'العنوان / موقع العقار مطلوب' })
+  address: string;
 }
 
 @InputType()

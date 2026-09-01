@@ -10,9 +10,12 @@ const schema = z.object({
   whatsappNumber: z
     .string()
     .regex(/^05\d{8}$/, 'صيغة الجوال غير صحيحة (مثال: 05XXXXXXXX)'),
-  applicantType: z.enum(['OWNER_OR_REP', 'TENANT'], {
-    required_error: 'الرجاء اختيار مقدم الطلب',
-  }),
+  applicantType: z
+    .string()
+    .min(1, 'الرجاء اختيار مقدم الطلب')
+    .refine((val) => val === 'OWNER_OR_REP' || val === 'TENANT', {
+      message: 'الرجاء اختيار مقدم الطلب',
+    }),
   ownerMobile: z
     .string()
     .regex(/^05\d{8}$/, 'صيغة الجوال غير صحيحة (مثال: 05XXXXXXXX)'),
@@ -22,7 +25,7 @@ const schema = z.object({
     .min(1, 'رقم الصك مطلوب')
     .max(12, 'يجب ألا يتجاوز رقم الصك 12 رقماً'),
   deedDate: z.string().min(1, 'تاريخ الصك مطلوب'),
-  locationAddress: z.string().optional(),
+  locationAddress: z.string().min(1, 'العنوان / موقع العقار مطلوب'), // 👈 Now strictly required
 });
 
 type FormValues = z.infer<typeof schema>;
@@ -60,7 +63,7 @@ export function Step1Basic({
     defaultValues: {
       whatsappNumber: defaults.whatsappNumber ?? '',
       applicantType:
-        (defaults.applicantType as FormValues['applicantType']) || undefined,
+        (defaults.applicantType as FormValues['applicantType']) || '',
       ownerMobile: defaults.ownerMobile || defaults.whatsappNumber || '',
       ownerId: defaults.ownerId ?? '',
       deedNumber: defaults.deedNumber ?? '',
@@ -185,6 +188,12 @@ export function Step1Basic({
           placeholder="المدينة، الحي، الشارع"
           {...register('locationAddress')}
         />
+        {/* 👈 Added the error text render block */}
+        {errors.locationAddress && (
+          <p className="text-sm text-red-600">
+            {errors.locationAddress.message}
+          </p>
+        )}
       </div>
 
       <div className="pt-1">

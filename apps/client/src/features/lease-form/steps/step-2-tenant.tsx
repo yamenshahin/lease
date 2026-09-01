@@ -7,9 +7,12 @@ import { LeaseFormState, TenantType } from '../lease-form.types';
 
 const schema = z
   .object({
-    tenantType: z.enum(['INDIVIDUAL', 'ORGANIZATION'], {
-      required_error: 'الرجاء اختيار صفة المستأجر',
-    }),
+    tenantType: z
+      .string()
+      .min(1, 'الرجاء اختيار صفة المستأجر')
+      .refine((val) => val === 'INDIVIDUAL' || val === 'ORGANIZATION', {
+        message: 'الرجاء اختيار صفة المستأجر',
+      }),
     tenantIdNumber: z.string().optional(),
     tenantDob: z.string().optional(),
     tenantMobile: z.string().optional(),
@@ -89,13 +92,13 @@ export function Step2Tenant({
     resolver: zodResolver(schema),
     defaultValues: {
       ...defaults,
-      tenantType: defaults.tenantType || undefined,
+      tenantType: (defaults.tenantType as FormValues['tenantType']) || '',
     },
   });
 
   const tenantType = useWatch({ control, name: 'tenantType' }) as
     | TenantType
-    | undefined;
+    | '';
 
   return (
     <form onSubmit={handleSubmit(onNext)} className="space-y-3">

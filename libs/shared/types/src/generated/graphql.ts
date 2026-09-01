@@ -33,6 +33,7 @@ export type CreateLeaseInput = {
   feePayer: FeePayer;
   floor: FloorLevel;
   kitchen?: UnitFeatureInput | null | undefined;
+  leaseType: LeaseType;
   livingRoom?: UnitFeatureInput | null | undefined;
   location?: MapLocationInput | null | undefined;
   maidRoom?: boolean;
@@ -72,6 +73,10 @@ export type FloorLevel =
   | 'FLOOR_9'
   | 'FLOOR_10_PLUS'
   | 'GROUND';
+
+export type LeaseType =
+  | 'COMMERCIAL'
+  | 'RESIDENTIAL';
 
 export type MapLocationInput = {
   address?: string | null | undefined;

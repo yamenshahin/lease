@@ -15,6 +15,9 @@ export function mapToCreateLeaseInput(state: LeaseFormState) {
   const isOrg = state.tenantType === 'ORGANIZATION';
 
   return {
+    // 1. Add the Lease Type to the GraphQL payload
+    leaseType: state.leaseType,
+
     applicantType: state.applicantType,
     ownerMobile: state.ownerMobile || state.whatsappNumber,
     ownerId: state.ownerId,
@@ -25,15 +28,12 @@ export function mapToCreateLeaseInput(state: LeaseFormState) {
       : undefined,
 
     tenantType: state.tenantType,
-
-    // Clean data based on Tenant Type to prevent backend validation errors
     tenantIdNumber: isIndividual
       ? state.tenantIdNumber || undefined
       : undefined,
     tenantDob:
       isIndividual && state.tenantDob ? toIsoDate(state.tenantDob) : undefined,
     tenantMobile: isIndividual ? state.tenantMobile || undefined : undefined,
-
     unifiedNumber: isOrg ? state.unifiedNumber || undefined : undefined,
     representativeId: isOrg ? state.representativeId || undefined : undefined,
     agencyNumber: isOrg ? state.agencyNumber || undefined : undefined,

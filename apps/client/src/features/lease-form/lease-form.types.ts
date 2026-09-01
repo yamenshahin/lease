@@ -1,5 +1,6 @@
 export type LeaseFormStep = 1 | 2 | 3 | 4;
 
+export type LeaseType = 'RESIDENTIAL' | 'COMMERCIAL';
 export type ApplicantType = 'OWNER_OR_REP' | 'TENANT';
 export type TenantType = 'INDIVIDUAL' | 'ORGANIZATION';
 export type ContractDuration =
@@ -40,6 +41,7 @@ export type UnitFeatureForm = {
 export type LeaseFormState = {
   step: LeaseFormStep;
   clientId: string | null;
+  leaseType: LeaseType;
 
   // Step 1
   whatsappNumber: string;
@@ -87,6 +89,7 @@ export type LeaseFormState = {
 export const initialLeaseFormState: LeaseFormState = {
   step: 1,
   clientId: null,
+  leaseType: 'RESIDENTIAL',
 
   whatsappNumber: '',
   applicantType: '',

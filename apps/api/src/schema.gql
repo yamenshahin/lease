@@ -41,6 +41,7 @@ input CreateLeaseInput {
   feePayer: FeePayer!
   floor: FloorLevel!
   kitchen: UnitFeatureInput
+  leaseType: LeaseType!
   livingRoom: UnitFeatureInput
   location: MapLocationInput
   maidRoom: Boolean! = false
@@ -106,6 +107,7 @@ type Lease {
   floor: FloorLevel!
   id: ID!
   kitchen: UnitFeature
+  leaseType: LeaseType!
   livingRoom: UnitFeature
   location: MapLocation
   maidRoom: Boolean!
@@ -126,6 +128,11 @@ type Lease {
   updatedAt: DateTime!
   waterMeter: String
   windowAc: UnitFeature
+}
+
+enum LeaseType {
+  COMMERCIAL
+  RESIDENTIAL
 }
 
 type MapLocation {
@@ -207,6 +214,7 @@ input UpdateLeaseInput {
   floor: FloorLevel
   id: ID!
   kitchen: UnitFeatureInput
+  leaseType: LeaseType
   livingRoom: UnitFeatureInput
   location: MapLocationInput
   maidRoom: Boolean = false

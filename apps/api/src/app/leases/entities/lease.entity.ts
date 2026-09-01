@@ -11,6 +11,11 @@ import { HydratedDocument, Types } from 'mongoose';
 
 export type LeaseDocument = HydratedDocument<Lease>;
 
+export enum LeaseType {
+  RESIDENTIAL = 'RESIDENTIAL', // سكني
+  COMMERCIAL = 'COMMERCIAL', // تجاري
+}
+
 export enum ApplicantType {
   OWNER_OR_REP = 'OWNER_OR_REP',
   TENANT = 'TENANT',
@@ -63,6 +68,7 @@ export enum FloorLevel {
   FLOOR_10_PLUS = '10_PLUS',
 }
 
+registerEnumType(LeaseType, { name: 'LeaseType' });
 registerEnumType(ApplicantType, { name: 'ApplicantType' });
 registerEnumType(TenantType, { name: 'TenantType' });
 registerEnumType(ContractDuration, { name: 'ContractDuration' });
@@ -111,6 +117,10 @@ export class Lease {
   @Field(() => ID)
   @Prop({ type: Types.ObjectId, required: true, ref: 'Client', index: true })
   clientId: Types.ObjectId;
+
+  @Field(() => LeaseType)
+  @Prop({ type: String, enum: LeaseType, required: true })
+  leaseType: LeaseType;
 
   // --- Step 1: Basic & Legal Info ---
   @Field(() => ApplicantType)

@@ -22,7 +22,7 @@ export default function LeasePage() {
     } else if (leaseTypeParam === 'residential') {
       patch({ leaseType: 'RESIDENTIAL' });
     }
-  }, [patch]);
+  }, []);
 
   if (doneLeaseId) {
     return (

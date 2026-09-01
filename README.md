@@ -1,96 +1,115 @@
-# LeaseApp
+# 🏢 LeaseApp Monorepo
 
-<a alt="Nx logo" href="https://nx.dev" target="_blank" rel="noreferrer"><img src="https://raw.githubusercontent.com/nrwl/nx/master/images/nx-logo.png" width="45"></a>
+![Nx](https://img.shields.io/badge/Nx-143055?style=for-the-badge&logo=nx&logoColor=white)
+![Next.js](https://img.shields.io/badge/Next-black?style=for-the-badge&logo=next.js&logoColor=white)
+![NestJS](https://img.shields.io/badge/nestjs-%23E0234E.svg?style=for-the-badge&logo=nestjs&logoColor=white)
+![GraphQL](https://img.shields.io/badge/-GraphQL-E10098?style=for-the-badge&logo=graphql&logoColor=white)
+![TypeScript](https://img.shields.io/badge/typescript-%23007ACC.svg?style=for-the-badge&logo=typescript&logoColor=white)
+![TailwindCSS](https://img.shields.io/badge/tailwindcss-%2338B2AC.svg?style=for-the-badge&logo=tailwind-css&logoColor=white)
+![MongoDB](https://img.shields.io/badge/MongoDB-%234ea94b.svg?style=for-the-badge&logo=mongodb&logoColor=white)
 
-✨ Your new, shiny [Nx workspace](https://nx.dev) is ready ✨.
+A full-stack, enterprise-grade multi-step lease creation platform. Designed with a strictly typed architecture, this application seamlessly bridges a Next.js React frontend with a NestJS GraphQL API using an Nx Workspace.
 
-[Learn more about this workspace setup and its capabilities](https://nx.dev/getting-started/intro#learn-nx?utm_source=nx_project&amp;utm_medium=readme&amp;utm_campaign=nx_projects) or run `npx nx graph` to visually explore what was created. Now, let's get you up to speed!
+## ✨ Key Features
 
-## Run tasks
+- **End-to-End Type Safety:** GraphQL code generation synchronizes backend schemas directly to frontend React hooks.
+- **Robust Zod Validation:** Fully localized Arabic validation utilizing custom `refine` and `.min(1)` patterns to gracefully intercept framework quirks (like empty strings and `NaN` values).
+- **Silent URL State Initialization:** Frontend intercepts `?leaseType=commercial` or `?leaseType=residential` on mount to strictly drive application state without breaking Next.js suspense boundaries.
+- **Brand Consistency:** Strict UI implementation of primary brand colors (Green `#14723d` and Red `#ba2931`) via Tailwind CSS.
+- **Code-First GraphQL:** Backend powered by NestJS and Mongoose, relying on heavily decorated DTOs (`@IsEnum`, `@ValidateNested`, `@IsNotEmpty`) to enforce strict API payloads.
 
-To run tasks with Nx use:
+---
 
-```sh
-npx nx <target> <project-name>
+## 🏗️ Architecture & Folder Structure
+
+The workspace is divided into autonomous apps and shared domain libraries for maximum scalability.
+
+```text
+lease-workspace/
+├── apps/
+│   ├── api/                               # 🟢 NESTJS BACKEND (GraphQL + Mongoose)
+│   │   ├── src/
+│   │   │   ├── app/
+│   │   │   │   ├── clients/               # Client identity domain
+│   │   │   │   ├── leases/                # Lease logic & DTOs (create-lease.input.ts)
+│   │   │   │   └── app.module.ts
+│   │   │   ├── main.ts
+│   │   │   └── schema.gql                 # ⚙️ Auto-generated GraphQL Schema
+│   │   └── project.json
+│   │
+│   └── client/                            # 🔵 NEXT.JS FRONTEND (React + Tailwind + Zod)
+│       ├── src/
+│       │   ├── app/
+│       │   │   └── lease/
+│       │   │       └── page.tsx           # Entry point & URL param parser
+│       │   └── features/
+│       │       └── lease-form/            # Wizard Feature Module
+│       │           ├── steps/             # Componentized form steps (1-4)
+│       │           ├── lease-form-shell.tsx
+│       │           ├── lease-form.types.ts
+│       │           └── map-to-create-lease-input.ts # State -> GraphQL Transformer
+│       ├── tailwind.config.js
+│       └── project.json
+│
+├── libs/
+│   └── shared/                            # 🟡 SHARED LIBRARIES
+│       ├── data-access/                   # GraphQL Clients & Mutations/Queries
+│       │   └── src/lib/graphql/
+│       ├── types/                         # GraphQL Codegen & Shared Interfaces
+│       │   └── src/generated/
+│       ├── ui/                            # Reusable UI/Tailwind Components
+│       └── utils/                         # Shared Helper Functions
+│
+├── codegen.ts                             # ⚙️ GRAPHQL CODEGEN CONFIGURATION
+└── nx.json                                # Nx Workspace cache & config
+
 ```
 
-For example:
+---
 
-```sh
-npx nx build myproject
+## 🚀 Getting Started
+
+### 1. Install Dependencies
+
+```bash
+npm install
+
 ```
 
-These targets are either [inferred automatically](https://nx.dev/concepts/inferred-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) or defined in the `project.json` or `package.json` files.
+### 2. Generate GraphQL Types
 
-[More about running tasks in the docs &raquo;](https://nx.dev/features/run-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+Whenever the backend `schema.gql` or frontend `.graphql` queries change, regenerate the shared types:
 
-## Add new projects
+```bash
+npm run graphql-codegen
+# or
+npx graphql-codegen --config codegen.ts
 
-While you could add new projects to your workspace manually, you might want to leverage [Nx plugins](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) and their [code generation](https://nx.dev/features/generate-code?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) feature.
-
-To install a new plugin you can use the `nx add` command. Here's an example of adding the React plugin:
-```sh
-npx nx add @nx/react
 ```
 
-Use the plugin's generator to create new projects. For example, to create a new React app or library:
+### 3. Run the Development Servers
 
-```sh
-# Generate an app
-npx nx g @nx/react:app demo
+**Start the NestJS API (Port 3000):**
 
-# Generate a library
-npx nx g @nx/react:lib some-lib
+```bash
+npx nx serve api
+
 ```
 
-You can use `npx nx list` to get a list of installed plugins. Then, run `npx nx list <plugin-name>` to learn about more specific capabilities of a particular plugin. Alternatively, [install Nx Console](https://nx.dev/getting-started/editor-setup?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) to browse plugins and generators in your IDE.
+**Start the Next.js Client (Port 3001):**
 
-[Learn more about Nx plugins &raquo;](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) | [Browse the plugin registry &raquo;](https://nx.dev/plugin-registry?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+```bash
+npx nx serve client
 
-## Set up CI!
-
-### Step 1
-
-To connect to Nx Cloud, run the following command:
-
-```sh
-npx nx connect
 ```
 
-Connecting to Nx Cloud ensures a [fast and scalable CI](https://nx.dev/ci/intro/why-nx-cloud?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) pipeline. It includes features such as:
+### 4. Testing the Application
 
-- [Remote caching](https://nx.dev/ci/features/remote-cache?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Task distribution across multiple machines](https://nx.dev/ci/features/distribute-task-execution?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Automated e2e test splitting](https://nx.dev/ci/features/split-e2e-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Task flakiness detection and rerunning](https://nx.dev/ci/features/flaky-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+Navigate to the client app in your browser and append a valid lease type to test the silent state initialization:
 
-### Step 2
+- **Commercial:** `http://localhost:3001/lease?leaseType=commercial`
+- **Residential:** `http://localhost:3001/lease?leaseType=residential`
 
-Use the following command to configure a CI workflow for your workspace:
+---
 
-```sh
-npx nx g ci-workflow
-```
-
-[Learn more about Nx on CI](https://nx.dev/ci/intro/ci-with-nx#ready-get-started-with-your-provider?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-## Install Nx Console
-
-Nx Console is an editor extension that enriches your developer experience. It lets you run tasks, generate code, and improves code autocompletion in your IDE. It is available for VSCode and IntelliJ.
-
-[Install Nx Console &raquo;](https://nx.dev/getting-started/editor-setup?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-## Useful links
-
-Learn more:
-
-- [Learn more about this workspace setup](https://nx.dev/getting-started/intro#learn-nx?utm_source=nx_project&amp;utm_medium=readme&amp;utm_campaign=nx_projects)
-- [Learn about Nx on CI](https://nx.dev/ci/intro/ci-with-nx?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Releasing Packages with Nx release](https://nx.dev/features/manage-releases?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [What are Nx plugins?](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-And join the Nx community:
-- [Discord](https://go.nx.dev/community)
-- [Follow us on X](https://twitter.com/nxdevtools) or [LinkedIn](https://www.linkedin.com/company/nrwl)
-- [Our Youtube channel](https://www.youtube.com/@nxdevtools)
-- [Our blog](https://nx.dev/blog?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+_Architected and engineered by Yamen Shahin._
